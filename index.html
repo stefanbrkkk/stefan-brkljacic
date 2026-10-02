@@ -42,7 +42,7 @@
       --ink-2: #111311;
       --paper: #f2efe8;
       --muted: #9ea39d;
-      --muted-2: #6e746e;
+      --muted-2: #858b85;
       --line: rgba(242,239,232,.16);
       --line-strong: rgba(242,239,232,.28);
       --signal: #c8ff4d;
@@ -619,6 +619,8 @@
     }
     .text-link::after { content: "↗"; color: var(--signal); }
     .text-link:hover { border-color: var(--signal); color: var(--signal); }
+    /* 24px hit area; padding/min-height would move the border-bottom underline */
+    .text-link::before { content: ""; position: absolute; left: -4px; right: -4px; top: 50%; height: 24px; transform: translateY(-50%); }
 
     .project-visual {
       min-height: 76vh;
@@ -655,7 +657,7 @@
     }
     .browser-dots { display: flex; gap: 6px; }
     .browser-dots i { width: 7px; height: 7px; border-radius: 50%; background: rgba(255,255,255,.22); }
-    .browser-url { font: 500 9px/1 var(--mono); color: rgba(255,255,255,.4); letter-spacing: .04em; }
+    .browser-url { font: 500 9px/1 var(--mono); color: rgba(255,255,255,.62); letter-spacing: .04em; }
 
     .honey { background: radial-gradient(circle at 32% 40%, rgba(232,164,54,.25), transparent 34%), #17130c; }
     .honey .art-title {
@@ -965,7 +967,7 @@
       background:linear-gradient(180deg,rgba(20,24,20,.92),rgba(9,11,9,.97));
       box-shadow:0 36px 90px rgba(0,0,0,.42),0 0 0 1px rgba(200,255,77,.02) inset;
       transform-style:preserve-3d;
-      will-change:transform,border-color,box-shadow;
+      will-change:transform;
       overflow:visible;
     }
     .build-browser.is-exploded { background:linear-gradient(180deg,rgba(20,24,20,.5),rgba(9,11,9,.62)); }
@@ -1045,7 +1047,7 @@
     .lab-responsive {
       position:absolute;left:50%;top:52%;width:min(80vw,1080px);height:min(52vh,540px);
       transform:translate(-50%,-50%);display:flex;align-items:end;justify-content:center;gap:clamp(18px,3vw,42px);
-      opacity:0;pointer-events:none;will-change:opacity,transform;
+      opacity:0;pointer-events:none;
     }
     .lab-device {position:relative;border:1px solid rgba(242,239,232,.18);background:#0c0f0c;box-shadow:0 28px 80px rgba(0,0,0,.42);overflow:hidden;transform-style:preserve-3d}
     .lab-device.desktop{width:58%;height:76%;border-radius:var(--r3)}.lab-device.tablet{width:22%;height:66%;border-radius:var(--r3)}.lab-device.phone{width:12%;height:57%;border-radius:var(--r3)}
@@ -1142,6 +1144,8 @@
     .project-visual:hover::before,.service:hover::before{opacity:1}
     .service{overflow:hidden}
     .navlinks a{position:relative}.navlinks a::after{content:"";position:absolute;left:0;right:100%;bottom:-7px;height:1px;background:var(--signal);transition:right .3s var(--ease)}.navlinks a:hover::after{right:0}
+    /* 24px hit area without moving the hover underline (padding/min-height would shift it) */
+    .navlinks a::before{content:"";position:absolute;left:0;right:0;top:50%;height:24px;transform:translateY(-50%);}
 
 
 
@@ -1337,6 +1341,10 @@
       .method-card { position:relative;left:auto;top:auto;width:100%;height:auto;min-height:560px;transform:none !important;opacity:1 !important;filter:none !important;pointer-events:auto !important; }
       .project-signal::after { animation:none !important; }
       .project-signal { transform:none !important; }
+      /* never-released will-change keeps 34 compositor layers alive for the whole
+         session; reduced-motion unpins the hero, so every one of them is waste */
+      .web-rig,.web-plate,.web-cursor,.web-tag,.name-letter,.project-visual,
+      .build-browser,.build-layer,.ship-badge { will-change:auto !important; }
     }
   
 
@@ -1373,7 +1381,7 @@
   </style>
 </head>
 <body>
-  <a class="skip-link" href="#main" data-i18n="skip">Skip to content</a>
+  <a class="skip-link" href="#work" data-i18n="skip">Skip to content</a>
 
 
   <header class="topbar" aria-label="Primary navigation">
@@ -1483,7 +1491,7 @@
       </div>
     </section>
 
-    <section class="work shell" id="work" aria-labelledby="work-title">
+    <section class="work shell" id="work" tabindex="-1" aria-labelledby="work-title">
       <div class="section-head">
         <div>
           <div class="eyebrow" data-i18n="workEyebrow">Selected work</div>
@@ -1787,10 +1795,11 @@
             </div>
           </div>
         </div>
-        <div class="footer footer-v2"><div>© 2026 Stefan Brkljačić</div><div class="center" data-i18n="footerBuilt">Websites for small businesses & product teams — Belgrade / remote.</div><div class="right" data-i18n="footLoc">Belgrade / Serbia</div></div>
       </div>
     </section>
   </main>
+
+  <footer class="footer footer-v2 shell"><div>© 2026 Stefan Brkljačić</div><div class="center" data-i18n="footerBuilt">Websites for small businesses & product teams — Belgrade / remote.</div><div class="right" data-i18n="footLoc">Belgrade / Serbia</div></footer>
 
   <dialog class="project-dialog project-dialog-v2" id="projectDialog" aria-labelledby="projectDialogTitle">
     <div class="project-dialog-inner">
