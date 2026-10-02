@@ -1163,6 +1163,7 @@
       backdrop-filter:blur(22px); -webkit-backdrop-filter:blur(22px);
       display:flex; flex-direction:column; justify-content:center; padding:0 var(--pad);
       clip-path:inset(0 0 100% 0); visibility:hidden; pointer-events:none;
+      touch-action:none; overscroll-behavior:contain;
       transition:clip-path .6s var(--ease), visibility 0s .6s;
     }
     body.menu-open .mobile-menu { clip-path:inset(0 0 0 0); visibility:visible; pointer-events:auto; transition:clip-path .6s var(--ease), visibility 0s; }
@@ -1180,7 +1181,7 @@
     body.menu-open .mobile-menu nav a:nth-child(4){transition-delay:.28s}
     body.menu-open .mobile-menu nav a:nth-child(5){transition-delay:.34s}
     .mm-foot { margin-top:34px; display:flex; align-items:center; gap:16px; flex-wrap:wrap; color:var(--muted); font:650 10px/1.5 var(--mono); letter-spacing:.1em; text-transform:uppercase; }
-    .mm-foot a { color:var(--paper); text-decoration:none; border-bottom:1px solid rgba(200,255,77,.4); }
+    .mm-foot a { color:var(--paper); text-decoration:none; border-bottom:1px solid rgba(200,255,77,.4); display:inline-block; padding:12px 4px; margin:0 -4px; }
     body.menu-open .topbar-inner { background:rgba(8,9,8,.4); }
     body.menu-open .topbar { z-index:95; }
     @media (max-width: 980px) {
@@ -1376,6 +1377,49 @@
 
     @media(max-width:1024px){.about-grid-v2{grid-template-columns:1fr}.about-side{grid-template-columns:minmax(0,1fr) minmax(0,1fr);align-items:start}.proof-responsive .resp-grid{grid-template-columns:1fr}.device-proof-grid{min-height:360px}.contact-v2{padding-top:90px!important}.contact-v2 .contact-grid{grid-template-columns:1fr}.contact-v2 .signal-wrap{min-height:380px}.start-faq-v2{grid-template-columns:1fr}.contact-channel-grid{grid-template-columns:1fr}.project-type-options{grid-template-columns:1fr 1fr}}
     @media(max-width:660px){.about{padding-bottom:72px}.about-side{grid-template-columns:1fr}.education-card{padding:22px}.education-meta{grid-template-columns:auto 1fr auto}.start-faq-v2>div{padding:20px 16px}.mini-status{display:none}.start-step{grid-template-columns:38px 1fr auto;padding:14px 12px}.start-step p{font-size:11px!important}.proof-responsive{padding-bottom:72px}.device-proof-grid{grid-template-columns:1fr 1fr;min-height:auto;align-items:end}.laptop-proof{grid-column:1/-1}.tablet-proof{max-width:78%;justify-self:end}.phone-proof{max-width:72%;justify-self:start}.contact-v2{padding:76px 0 28px!important}.contact-v2 .signal-wrap{display:none}.contact-v2 .contact-grid{display:block}.contact-intro{font-size:13px}.contact-types{margin-bottom:18px}.contact-socials{gap:12px 16px}.project-type-options{grid-template-columns:1fr}.project-dialog-v2{width:calc(100vw - 18px)}.project-dialog-v2 .project-dialog-inner{padding:18px}.contact-channel-grid{grid-template-columns:1fr}.project-message-preview{font-size:11.5px}.footer-v2{grid-template-columns:1fr;gap:7px}.footer-v2 .center,.footer-v2 .right{text-align:left}.device-proof-label i{max-width:18ch}}
+    /* Phone legibility: 8-9px mono is unreadable at arm's length on a handset.
+       Raised to 11px only at <=660px; nothing above 11px is touched. */
+    @media(max-width:660px){
+      .tag,.contact-types span,.proof-links a,.mini-kicker,.mini-status,
+      .education-badges span,.education-meta i,.method-num,.method-state,
+      .method-meta,.proof-disclaimer,.contact-socials,.footer-v2,
+      .proj-meta b,.about-principles span,.fact b,.start-step-num,
+      .service-n,.term,.verify-item,.device-proof-label{font-size:11px}
+      /* load-bearing: at 11px the tablet/phone captions overflow their grid
+         column at 360/320px (measured +19.5px / +27.7px past the viewport) */
+      .device-proof-label i{max-width:12ch}
+      /* touch comfort: all of these are <=26px tall and are the only route to
+         the email / GitHub / LinkedIn. ::before bands add height without
+         changing layout, matching the technique already used by .navlinks a. */
+      .brand{position:relative}
+      .brand::before{content:"";position:absolute;left:-9px;right:-9px;top:50%;height:44px;transform:translateY(-50%)}
+      .menu-btn::before{content:"";position:absolute;inset:-4px}
+      .contact-socials{flex-direction:column;align-items:flex-start;gap:30px 0;margin-bottom:16px}
+      .contact-socials a{position:relative}
+      .contact-socials a::before{content:"";position:absolute;left:-9px;right:-9px;top:50%;height:44px;transform:translateY(-50%)}
+    }
+    /* Rotated handset: .hero-sticky is 100svh with overflow:hidden, so the
+       role line and scroll cue fall outside the pinned frame and the CTAs
+       lose their bottom edge. Short viewports only; portrait is unaffected. */
+    @media(orientation:landscape) and (max-height:480px){
+      .topbar-inner{margin-top:8px;padding:6px 8px 6px 12px}
+      .menu-btn{width:34px;height:34px}
+      .brand-mark{width:24px;height:24px}
+      .hero-inner{padding-top:56px;padding-bottom:12px}
+      .hero-meta{margin-bottom:10px}
+      .hero-meta .eyebrow{display:none}
+      .name-line{font-size:min(clamp(52px,10.5vw,172px),12vh);line-height:.84}
+      .hero-promise{margin-top:10px}
+      .hero-ctas{margin-top:10px}
+      .hero-bottom{margin-top:10px}
+      .scroll-cue{display:none}
+    }
+    @media(orientation:landscape) and (max-height:420px){
+      .hero-inner{padding-top:52px;padding-bottom:10px}
+      .hero-promise{display:none}
+      .name-line{font-size:min(clamp(40px,10.5vw,172px),13vh)}
+      .cta{min-height:46px}
+    }
     @media(prefers-reduced-motion:reduce){.device-proof,.device-proof-grid.is-visible .device-proof{opacity:1;transform:none;transition:none}.faq-answer{transition:none}.project-message-panel.is-active{animation:none}}
 
   </style>
@@ -2305,7 +2349,7 @@
       /* mobile menu */
       const menuBtn = document.querySelector('.menu-btn');
       const mobileMenu = document.getElementById('mobileMenu');
-      const closeMenu = () => { document.body.classList.remove('menu-open'); menuBtn.setAttribute('aria-expanded','false'); mobileMenu.setAttribute('aria-hidden','true'); document.body.style.overflow=''; const mainEl=document.getElementById('main'); if(mainEl) mainEl.inert=false; };
+      const closeMenu = () => { document.body.classList.remove('menu-open'); menuBtn.setAttribute('aria-expanded','false'); mobileMenu.setAttribute('aria-hidden','true'); document.body.style.overflow=''; document.documentElement.style.overflow=''; const mainEl=document.getElementById('main'); if(mainEl) mainEl.inert=false; };
       if (menuBtn && mobileMenu) {
         const mainEl = document.getElementById('main');
         menuBtn.addEventListener('click', () => {
@@ -2313,6 +2357,7 @@
           menuBtn.setAttribute('aria-expanded', String(open));
           mobileMenu.setAttribute('aria-hidden', String(!open));
           document.body.style.overflow = open ? 'hidden' : '';
+          document.documentElement.style.overflow = open ? 'hidden' : '';
           if (mainEl) mainEl.inert = open;
           if (open) { const first = mobileMenu.querySelector('nav a'); first && first.focus(); }
           else menuBtn.focus();
