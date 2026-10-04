@@ -27,6 +27,10 @@
   letter-spacing: .02em;
 }
 
+.device-proof-label b {
+  display: block;
+}
+
 .proof-provenance {
   margin-top: 20px;
   color: var(--muted);

@@ -62,6 +62,12 @@ One WebKit Serbian 1363×936 journey exhausted the 30-second whole-test deadline
 
 The three browser projects run in independent matrix jobs, each with one worker and all 113 cases once (including four mobile presentation cases). Quality checks run once in the Chromium job; artifact names identify the engine. Each engine stops at its first failure while the other matrix jobs continue; unrun cases are not counted as passes or capability skips. This preserves complete all-engine coverage on a passing run while shortening elapsed feedback time. The failed run and its artifacts remain available; a corrected workflow is not a passing CI claim until its actual result is observed.
 
+## Mobile follow-up verification limits
+
+Run https://github.com/stefanbrkkk/stefan-brkljacic/actions/runs/37242573334 established that Firefox launches with the corrected container UID and passes its six normal EN/SR phone, tablet and laptop journeys. It then stopped on the caption overflow assertion: Firefox reports `clientWidth: 0` for the now-inline `<b>` caption while reporting its text's `scrollWidth`. A local reproduction confirmed that the parent label fits. Captions now use block layout, restoring a measurable content box without changing the assertion or hiding overflow. All twelve affected EN/SR phone/desktop layout cases passed locally across the three engines. The next published run must still be observed before claiming full CI success.
+
+The observed npm audit reports seven high-severity development-tool dependency entries, all propagated from the `braces <=3.0.3` stack-exhaustion advisory (https://github.com/advisories/GHSA-vfj7-8cjw-p6xm) through Stylelint's glob dependencies. The registry's latest `braces` version was still `3.0.3` at verification; the suggested forced remediation downgrades Stylelint to `7.7.0` and its standard config to `15.0.1`. That breaking downgrade was not applied. `npm audit --omit=dev` reports zero vulnerabilities; this static site's production assets do not include these development packages. The development-tool advisory remains unresolved and is not described as a clean dependency audit.
+
 ## Firefox cache restoration at the Phase3 boundary
 
 The first targeted Firefox invocation on2026-10-04 failed before browser launch withSIGBUS. Root reproduced it with a blank-page launch and found cached libxul.so truncated to55320576 bytes; its ELF segments require roughly185MB. Shared memory had4.9GB free, so this was not an application assertion or a shared-memory exhaustion pass.
