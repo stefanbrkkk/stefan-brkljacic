@@ -1,0 +1,59 @@
+[
+  {
+    "path": "assets/projects/harmonije-desktop-2026-10-04.jpg",
+    "url": "https://harmonije-panonije.vercel.app/",
+    "capturedAt": "2026-10-04T12:37:16.773Z",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "deviceScaleFactor": 1,
+    "browser": "Chromium browser viewport; not a physical device",
+    "format": "Direct browser JPEG screenshot, quality 82",
+    "reducedMotion": true,
+    "responseStatus": 200,
+    "sourceHtmlSha256": "4cf4ef32dc13f7731cedb9e134278a8a5b1118286490b071d04ad5c920638148",
+    "imageSha256": "2b6676b91487f82b9df4276abefb1acd60163b9db889101c2fa20339c62136c1",
+    "bytes": 104939,
+    "pageTitle": "Harmonije Panonije | Immuno Craft sirupi sa medom",
+    "heading": "Harmonija prirode u svakoj flaši."
+  },
+  {
+    "path": "assets/projects/harmonije-tablet-2026-10-04.jpg",
+    "url": "https://harmonije-panonije.vercel.app/",
+    "capturedAt": "2026-10-04T12:37:31.010Z",
+    "viewport": {
+      "width": 768,
+      "height": 1024
+    },
+    "deviceScaleFactor": 1,
+    "browser": "Chromium browser viewport; not a physical device",
+    "format": "Direct browser JPEG screenshot, quality 82",
+    "reducedMotion": true,
+    "responseStatus": 200,
+    "sourceHtmlSha256": "4cf4ef32dc13f7731cedb9e134278a8a5b1118286490b071d04ad5c920638148",
+    "imageSha256": "b922fa1fa6aad853819f9d9e7d7fe48d98eb05957e7c339ef5f607c9e602f6b7",
+    "bytes": 72893,
+    "pageTitle": "Harmonije Panonije | Immuno Craft sirupi sa medom",
+    "heading": "Harmonija prirode u svakoj flaši."
+  },
+  {
+    "path": "assets/projects/harmonije-phone-2026-10-04.jpg",
+    "url": "https://harmonije-panonije.vercel.app/",
+    "capturedAt": "2026-10-04T12:37:45.847Z",
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "deviceScaleFactor": 1,
+    "browser": "Chromium browser viewport; not a physical device",
+    "format": "Direct browser JPEG screenshot, quality 82",
+    "reducedMotion": true,
+    "responseStatus": 200,
+    "sourceHtmlSha256": "4cf4ef32dc13f7731cedb9e134278a8a5b1118286490b071d04ad5c920638148",
+    "imageSha256": "0debcf0eaa1cddb3b5a2b5d354aa54e24ce51dc2c9c17ce6793e9100c10a7bd6",
+    "bytes": 42199,
+    "pageTitle": "Harmonije Panonije | Immuno Craft sirupi sa medom",
+    "heading": "Harmonija prirode u svakoj flaši."
+  }
+]

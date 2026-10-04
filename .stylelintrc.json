@@ -1,0 +1,9 @@
+{
+  "extends": "stylelint-config-standard",
+  "rules": {
+    "no-descending-specificity": null,
+    "color-function-notation": "legacy",
+    "alpha-value-notation": "number",
+    "selector-id-pattern": "^[a-z][a-zA-Z0-9]*(?:-[a-zA-Z0-9]+)*$"
+  }
+}

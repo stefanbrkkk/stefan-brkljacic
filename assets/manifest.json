@@ -1,0 +1,77 @@
+{
+  "source": "8a4c317:index.html",
+  "originalHtmlBytes": 780226,
+  "assets": [
+    {
+      "path": "assets/fonts/inter-1.woff2",
+      "bytes": 85068,
+      "sha256": "34b9c504cab7a73e37b746343a449132e56cf7b5481af2cb81dc74dcff25c956"
+    },
+    {
+      "path": "assets/fonts/inter-2.woff2",
+      "bytes": 48256,
+      "sha256": "3100e775e8616cd2611beecfa23a4263d7037586789b43f035236a2e6fbd4c62"
+    },
+    {
+      "path": "assets/fonts/fraunces-1.woff2",
+      "bytes": 20944,
+      "sha256": "f95e78d6c6569d367d861bf38ee05cda0b6d71fe5f16278dbdd807c80b4bcfef"
+    },
+    {
+      "path": "assets/fonts/fraunces-2.woff2",
+      "bytes": 22852,
+      "sha256": "475b154af19c6b4ef371db22078b5044a078ce2467e11ef22a7b87f77837caf3"
+    },
+    {
+      "path": "assets/fonts/jetbrains-mono-1.woff2",
+      "bytes": 11624,
+      "sha256": "db5ff4db83e580426280e9337a58dc57d3a83784a1b03ad80914651594441d52"
+    },
+    {
+      "path": "assets/fonts/jetbrains-mono-2.woff2",
+      "bytes": 31432,
+      "sha256": "83c005d49d8a6a50474c73a5a36ac0468076e9c4a29da7bdb14995d80560a5be"
+    },
+    {
+      "path": "assets/images/apple-touch-icon.png",
+      "bytes": 4791,
+      "sha256": "524073cc1d15e918a87915dc935a6e72694e478f8669476864f19011e4270ea4",
+      "width": 180,
+      "height": 180
+    },
+    {
+      "path": "assets/images/harmonije-panonije.jpg",
+      "bytes": 43762,
+      "sha256": "e8499c112d3b8eb5d7c9c46721130a5f34e3b2d02fb7cda1ad5848549f99bbff",
+      "width": 1000,
+      "height": 640
+    },
+    {
+      "path": "assets/images/glasai.jpg",
+      "bytes": 40076,
+      "sha256": "7702aa6fc1cf095ebc0a9bd73c728bb613a9e4fa9da3babc3e0815134719ac98",
+      "width": 1000,
+      "height": 640
+    },
+    {
+      "path": "assets/images/gimnastika-kraguj.jpg",
+      "bytes": 48273,
+      "sha256": "b9ed2f4d657ebe4c8ebff37f264bcf80f766aaeeea125825acb30a677269a767",
+      "width": 1000,
+      "height": 640
+    },
+    {
+      "path": "assets/images/sheetpost.jpg",
+      "bytes": 48362,
+      "sha256": "2b8f6a063523168fe6b894ff6c8647f311483297a02c360a8290794edf35abf2",
+      "width": 1000,
+      "height": 640
+    }
+  ],
+  "originalRemoteBaseline": {
+    "repositoryCommit": "289a06a7bf0374d93b87ecb3a2aaba80f4e6bf2d",
+    "indexBlob": "70af10ea22e064951790782925e5dc6fb2d855b4",
+    "verification": "All 11 extracted asset SHA256 values independently compared with payloads in the original uploaded repository index; exact byte matches.",
+    "measurementNote": "originalHtmlBytes measures the later local pre-extraction source listed above, not the original remote baseline."
+  }
+}
