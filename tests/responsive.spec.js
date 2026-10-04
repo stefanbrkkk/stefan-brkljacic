@@ -74,7 +74,9 @@ for (const language of ['en','sr']) {
       const targets = '.brand,.lang-switch,.menu-btn,.cta,.project-links a,.proof-links a,.contact-socials a,.project-case > summary,.faq-item > summary,.process-details > summary';
       for (const target of await page.locator(targets).all()) {
         if (!await target.isVisible()) continue;
-        const box=await target.boundingBox();
+        // Firefox's protocol boundingBox can round 44px to 43.99997px after scrolling.
+        // Measure the DOM rectangle directly, retaining the exact 44px minimum.
+        const box=await target.evaluate(el => el.getBoundingClientRect().toJSON());
         expect(box.width,`44px touch width: ${await target.getAttribute('class')}`).toBeGreaterThanOrEqual(44);
         expect(box.height,`44px touch height: ${await target.getAttribute('class')}`).toBeGreaterThanOrEqual(44);
       }
