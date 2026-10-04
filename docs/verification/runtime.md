@@ -54,6 +54,14 @@ Full action SHA pins were verified via each official release tag, immutable comm
 
 This is configuration/source verification. An actual CI result can only be reported after observing the published workflow run. Default local execution now works with the scratch runtime prefix from `../browser-runtime/env.sh`; each command's Playwright webServer shares its command's network namespace. Local software-rendered Chromium is a different binary from the container's official Chromium and is identified above.
 
+## First observed GitHub run and CI correction
+
+Run https://github.com/stefanbrkkk/stefan-brkljacic/actions/runs/37238653884 on `22f930d` failed: 216 passed, 109 failed and two skipped. Firefox failed before navigation because the container ran as root while `/github/home` belonged to `pwuser`; the launch log identifies this ownership mismatch. The workflow now uses `--user 1001`, matching the official Playwright container CI example at https://playwright.dev/docs/ci#via-containers . No home-directory environment variable is overridden.
+
+One WebKit Serbian 1363×936 journey exhausted the 30-second whole-test deadline at the final evidence screenshot's animation-frame wait. Neighboring large viewport journeys passed in 26.6, 28.3 and 29.7 seconds. The long responsive usability journeys now have a 60-second whole-test budget; their individual assertions, geometry limits, required actions and zero-retry policy are unchanged. This correction does not establish a hardware-performance result.
+
+The three browser projects run in independent matrix jobs, each with one worker and all 113 cases once (including four mobile presentation cases). Quality checks run once in the Chromium job; artifact names identify the engine. Each engine stops at its first failure while the other matrix jobs continue; unrun cases are not counted as passes or capability skips. This preserves complete all-engine coverage on a passing run while shortening elapsed feedback time. The failed run and its artifacts remain available; a corrected workflow is not a passing CI claim until its actual result is observed.
+
 ## Firefox cache restoration at the Phase3 boundary
 
 The first targeted Firefox invocation on2026-10-04 failed before browser launch withSIGBUS. Root reproduced it with a blank-page launch and found cached libxul.so truncated to55320576 bytes; its ELF segments require roughly185MB. Shared memory had4.9GB free, so this was not an application assertion or a shared-memory exhaustion pass.

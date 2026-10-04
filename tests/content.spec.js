@@ -59,7 +59,7 @@ test('Serbian translates ordinary visible copy and accessible names', async ({ p
   await expect(page.locator('.education-copy h3')).toContainText('Deveta beogradska gimnazija');
   await expect(page.locator('.fact').first()).toContainText('Beograd, Srbija');
   await expect(page.locator('.method-num').nth(4)).toHaveText('05 / PROVERA');
-  await expect(page.locator('.device-proof-label b').last()).toHaveText('Telefon · 390×844');
+  await expect(page.locator('.device-proof-label b').last()).toHaveText('Telefon');
   await expect(page.locator('.phone-proof img')).toHaveAttribute('alt', /Harmonije Panonije.*pregledaču.*390 puta 844/);
   expect(await page.locator('main').innerText()).not.toMatch(/Respoz|Small surface|Natural Sciences|Keyboard|fallbackovi/);
 });

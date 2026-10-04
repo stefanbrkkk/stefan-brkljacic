@@ -1,0 +1,153 @@
+/* Mobile reading hierarchy and accurate, uncropped viewport previews. */
+.hero-mobile-role {
+  display: none;
+}
+
+.device-proof .device-frame {
+  --frame-radius: 16px;
+
+  aspect-ratio: auto;
+  padding: 5px;
+  border-radius: var(--frame-radius);
+}
+
+.device-proof .device-frame img {
+  height: auto;
+  object-fit: contain;
+  border-radius: calc(var(--frame-radius) - 6px);
+  transform: none;
+}
+
+.device-proof .device-camera,.laptop-proof .device-frame::after {
+  display: none;
+}
+
+.device-proof .device-proof-label {
+  display: block;
+  letter-spacing: .02em;
+}
+
+.proof-provenance {
+  margin-top: 20px;
+  color: var(--muted);
+  font: 400 12px/1.5 var(--sans);
+}
+
+.proof-provenance > summary {
+  cursor: pointer;
+  min-height: 44px;
+  padding-block: 12px;
+  width: fit-content;
+}
+
+.proof-provenance .proof-disclaimer {
+  margin-top: 0;
+  font: inherit;
+  text-transform: none;
+  letter-spacing: normal;
+}
+
+@media (hover: none), (pointer: coarse) {
+  .device-proof:hover .device-frame {
+    transform: none;
+    border-color: rgb(242,239,232,.2);
+    box-shadow: 0 34px 70px rgb(0,0,0,.36);
+  }
+}
+
+@media (width <= 660px) {
+  .hero {
+    min-height: 0;
+  }
+
+  .hero-sticky {
+    position: relative;
+    height: auto;
+    overflow: visible;
+  }
+
+  .hero-inner {
+    padding-top: clamp(112px,17svh,144px);
+    padding-bottom: 48px;
+  }
+
+  .hero-web-object,.hero-grid,.hero-meta p,.hero-bottom,
+  .hero-meta [data-i18n="heroEyebrow"] {
+    display: none;
+  }
+
+  .hero-mobile-role {
+    display: inline;
+  }
+
+  .hero-meta {
+    margin-bottom: 24px;
+  }
+
+  .hero-meta .eyebrow {
+    display: block;
+    letter-spacing: .04em;
+  }
+
+  .name-line {
+    font-size: clamp(46px,15.5vw,76px);
+    line-height: .95;
+  }
+
+  .name-line.alt {
+    max-width: 100%;
+    color: var(--paper);
+    -webkit-text-stroke: 0;
+  }
+
+  .hero-promise {
+    display: block;
+    font-size: 17px;
+    line-height: 1.55;
+    margin-top: 24px;
+  }
+
+  .hero-ctas {
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 28px;
+  }
+
+  .hero-ctas .primary {
+    min-height: 52px;
+  }
+
+  .hero-ctas .secondary {
+    width: fit-content;
+    min-height: 44px;
+    padding-inline: 0;
+    border: 0;
+    background: none;
+    box-shadow: none;
+    text-decoration: underline;
+    text-underline-offset: 6px;
+  }
+
+  .device-proof-grid {
+    grid-template-columns: repeat(2,minmax(0,1fr));
+    gap: 20px 12px;
+    align-items: start;
+    min-height: 0;
+  }
+
+  .tablet-proof,.phone-proof {
+    max-width: none;
+    width: 100%;
+    justify-self: stretch;
+  }
+
+  .device-proof,.reveal-ready .device-proof-grid:not(.is-visible) .device-proof {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+
+  .device-proof-label {
+    line-height: 1.5;
+  }
+}

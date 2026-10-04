@@ -42,6 +42,9 @@ test('reflow dialog keeps Close reachable after long content is scrolled', async
 for (const language of ['en','sr']) {
   for (const [width,height] of viewports) {
     test(`${language} usable at ${width}x${height}${width===682?' (200% reflow equivalent)':''}`, async ({ page }) => {
+      // This full keyboard/scroll/dialog journey reached 29.7s on CI WebKit.
+      // Keep assertion deadlines unchanged; allow the whole journey 60 seconds.
+      test.setTimeout(60000);
       await page.setViewportSize({ width,height });
       await page.emulateMedia({ reducedMotion:'reduce' });
       await page.goto('/');

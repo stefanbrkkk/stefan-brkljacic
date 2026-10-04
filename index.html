@@ -30,6 +30,7 @@
   {"@context":"https://schema.org","@graph":[{"@type":"Service","name":"Stefan Brkljačić — web development","description":"Websites for small businesses, product prototypes and frontend QA.","areaServed":"Belgrade, Serbia and remote worldwide","@id":"https://stefan-brkljacic.vercel.app/#service","url":"https://stefan-brkljacic.vercel.app/","provider":{"@id":"https://stefan-brkljacic.vercel.app/#person"}},{"@type":"Person","name":"Stefan Brkljačić","jobTitle":"Web Developer","email":"stefanbrkk@gmail.com","address":{"@type":"PostalAddress","addressLocality":"Belgrade","addressCountry":"RS"},"sameAs":["https://github.com/stefanbrkkk","https://www.linkedin.com/in/stefan-brklja%C4%8Di%C4%87-13258942a/"],"knowsAbout":["React","Next.js","TypeScript","Playwright","Accessibility","SEO"],"@id":"https://stefan-brkljacic.vercel.app/#person","url":"https://stefan-brkljacic.vercel.app/"}]}
   </script>
   <link rel="stylesheet" href="styles/site.css">
+  <link rel="stylesheet" href="styles/mobile.css">
 </head>
 <body>
   <a class="skip-link" href="#work" data-i18n="skip">Skip to content</a>
@@ -103,7 +104,7 @@
 
           <div class="hero-meta">
             <div class="hero-meta-left">
-              <div class="eyebrow"><span class="dot">●</span> <span data-i18n="heroEyebrow">Independent web developer · AI product builder</span></div>
+              <div class="eyebrow"><span class="dot">●</span> <span data-i18n="heroEyebrow">Independent web developer · AI product builder</span><span class="hero-mobile-role" data-i18n="heroMobileRole">Web developer · AI products</span></div>
               <p data-i18n="heroIntro">I turn incomplete briefs into polished, testable web experiences — from first structure to production QA and deployment.</p>
             </div>
             <div class="hero-coord" aria-hidden="true" data-i18n-html="heroCoordinates">44.7866° N / 20.4489° E<br>Belgrade / Serbia / 2026</div>
@@ -407,26 +408,26 @@
           <p data-i18n="respText">From 360px phones to wide desktops — the same interface, adapted and reviewed across representative viewport widths before launch.</p>
           <div class="proof-links">
             <a href="https://harmonije-panonije.vercel.app/" target="_blank" rel="noreferrer">Harmonije Panonije ↗</a>
-            <a href="https://gimnastika-kraguj.vercel.app/" target="_blank" rel="noreferrer">Gimnastika Kraguj ↗</a>
-            <a href="https://www.glasai.online/" target="_blank" rel="noreferrer">GlasAI ↗</a>
           </div>
         </div>
         <div class="device-proof-grid" role="group" data-reveal data-i18n-aria-label="ariaProof" aria-label="Website captures at desktop, tablet and mobile viewport sizes">
           <a class="device-proof laptop-proof" href="https://harmonije-panonije.vercel.app/" target="_blank" rel="noreferrer">
-            <span class="device-proof-label"><b data-i18n="deviceLaptop">Desktop · 1440×900</b><i>Harmonije Panonije</i></span>
+            <span class="device-proof-label"><b data-i18n="deviceLaptop">Desktop</b><span class="sr-only">Harmonije Panonije</span></span>
             <span class="device-frame"><span class="device-camera"></span><img src="assets/projects/harmonije-desktop-2026-10-04.jpg" width="1440" height="900" data-i18n-alt="altLaptop" alt="Harmonije Panonije website captured at a 1440 by 900 desktop viewport" loading="lazy" decoding="async"><span class="image-fallback" data-i18n="imageUnavailable" hidden>Preview unavailable. Open project.</span></span>
           </a>
           <a class="device-proof tablet-proof" href="https://harmonije-panonije.vercel.app/" target="_blank" rel="noreferrer">
-            <span class="device-proof-label"><b data-i18n="deviceTablet">Tablet · 768×1024</b><i>Harmonije Panonije</i></span>
+            <span class="device-proof-label"><b data-i18n="deviceTablet">Tablet</b><span class="sr-only">Harmonije Panonije</span></span>
             <span class="device-frame"><span class="device-camera"></span><img src="assets/projects/harmonije-tablet-2026-10-04.jpg" width="768" height="1024" data-i18n-alt="altTablet" alt="Harmonije Panonije website captured at a 768 by 1024 tablet viewport" loading="lazy" decoding="async"><span class="image-fallback" data-i18n="imageUnavailable" hidden>Preview unavailable. Open project.</span></span>
           </a>
           <a class="device-proof phone-proof" href="https://harmonije-panonije.vercel.app/" target="_blank" rel="noreferrer">
-            <span class="device-proof-label"><b data-i18n="devicePhone">Phone · 390×844</b><i>Harmonije Panonije</i></span>
+            <span class="device-proof-label"><b data-i18n="devicePhone">Phone</b><span class="sr-only">Harmonije Panonije</span></span>
             <span class="device-frame"><span class="device-camera"></span><img src="assets/projects/harmonije-phone-2026-10-04.jpg" width="390" height="844" data-i18n-alt="altPhone" alt="Harmonije Panonije website captured at a 390 by 844 phone viewport" loading="lazy" decoding="async"><span class="image-fallback" data-i18n="imageUnavailable" hidden>Preview unavailable. Open project.</span></span>
           </a>
         </div>
       </div>
+      <details class="proof-provenance"><summary data-i18n="proofCaptureDetails">Capture details</summary>
       <p class="proof-disclaimer" data-i18n="respProofNote">Harmonije Panonije browser captures from 4 October 2026: 1440×900, 768×1024 and 390×844. These illustrate viewport layouts; device frames do not establish physical-device testing.</p>
+      </details>
     </section>
 
     <section class="about shell" id="about" aria-labelledby="about-title">

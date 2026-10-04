@@ -115,7 +115,7 @@ for (const language of ['en','sr']) {
     for (const proof of await page.locator('.device-proof').all()) {
       await proof.scrollIntoViewIfNeeded();
       await expect(proof.locator('.image-fallback')).toBeVisible();
-      await expect(proof.locator('.device-proof-label i')).toHaveText('Harmonije Panonije');
+      await expect(proof.locator('.device-proof-label .sr-only')).toHaveText('Harmonije Panonije');
       await expect(proof).toHaveAttribute('href', 'https://harmonije-panonije.vercel.app/');
       await proof.focus();
       await expect(proof).toBeFocused();
