@@ -453,3 +453,20 @@
  color:#666052; }
 
 .compact-folio .project-page .page-kicker { margin-bottom:8px; }
+
+/* One printed surface stays on screen from the resting leaf through the turn.
+   Transparent HTML retains native links, selection and keyboard semantics. */
+.scene-ready .physical-page .book-page { background:transparent;
+ box-shadow:none;
+ cursor:pointer; }
+.scene-ready .physical-page .book-page::after { display:none; }
+.scene-ready .physical-page .book-page > * { opacity:0; }
+
+.scene-ready .physical-page .book-page > :focus-visible,
+.scene-ready .physical-page .book-page > :has(:focus-visible) { opacity:1;
+ background:#f4f0e8; }
+
+.project-art { display:block;
+ color:inherit;
+ text-decoration:none;
+ cursor:pointer; }

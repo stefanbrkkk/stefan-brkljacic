@@ -1,5 +1,5 @@
 {
-  "sourceHash": "b7afc6bd993a8d97d85b8f1e8412de52c59ed41d77953b365ba37b9ceb2ac419",
+  "sourceHash": "6e1c94036b19b2b340cc040f0441224439cb87acef859e78ba49bde32e8a6c58",
   "sources": [
     "styles/site.css",
     "styles/mobile.css",
@@ -21,8 +21,8 @@
     "assets/fonts/jetbrains-mono-2.woff2"
   ],
   "dimensions": [
-    600,
-    838
+    900,
+    1257
   ],
   "pages": 48,
   "overflow": []

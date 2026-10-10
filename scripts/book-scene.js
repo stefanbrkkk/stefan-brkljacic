@@ -9,6 +9,7 @@ import {spreadHTML,projectImages} from './book-content.js';
 const W=2.9,H=4.05;
 const bakedPages=import.meta.glob('../assets/book-pages/*.webp',{eager:true,query:'?url',import:'default'});
 const smooth=p=>p*p*(3-2*p);
+const paperHeight=u=>.022*Math.exp(-8*u);
 function canvasTexture(draw,w=1024,h=1024) {
  const c=document.createElement('canvas'); c.width=w;c.height=h;draw(c.getContext('2d'),w,h);
  const t=new THREE.CanvasTexture(c);t.colorSpace=THREE.SRGBColorSpace;t.anisotropy=8;return t;
@@ -74,7 +75,7 @@ function paperTexture(index,side,lang,images={}) {
 }
 export class BookScene {
  constructor(host,onAction,onFailure) {
-  this.host=host;this.onAction=onAction;this.onFailure=onFailure;this.lang='en';this.index=-1;this.images={};this.dirty=true;this.yaw=0;this.zoom=1;this.hover=0;this.lastPhase='';this.pointer=null;this.pointers=new Map();this.focusSide=0;this.uploads=0;this.preparations=new Map();
+  this.host=host;this.onAction=onAction;this.onFailure=onFailure;this.lang='en';this.index=-1;this.images={};this.dirty=true;this.yaw=0;this.zoom=1;this.hover=0;this.lastPhase='';this.pointer=null;this.pointers=new Map();this.focusSide=0;this.uploads=0;this.preparations=new Map();this.preparedEditions=new Set();
   this.scene=new THREE.Scene();this.scene.background=null;
   this.renderer=new THREE.WebGLRenderer({antialias:true,alpha:true,powerPreference:'high-performance'});
   const gl=this.renderer.getContext(),debug=gl.getExtension('WEBGL_debug_renderer_info');
@@ -91,7 +92,7 @@ export class BookScene {
   this.cssScene=new THREE.Scene();this.cssBook=new THREE.Group();this.cssBook.rotation.x=-Math.PI/2;this.cssScene.add(this.cssBook);
   this.htmlPages=[0,1].map((side)=>{
    const el=document.createElement('div');el.className='physical-page';el.dataset.side=String(side);el.style.visibility='hidden';el.inert=true;el.style.width='600px';el.style.height='838px';
-   const obj=new CSS3DObject(el);obj.scale.setScalar(W/600);obj.position.set(side?W/2:-W/2,0,.265);obj.rotation.y=(side?1:-1)*.015;this.cssBook.add(obj);return obj;
+   const obj=new CSS3DObject(el);obj.scale.setScalar(W/600);obj.position.set(side?W/2:-W/2,0,.265);obj.rotation.y=0;this.cssBook.add(obj);return obj;
   });
   this.book=new THREE.Group();this.book.rotation.x=-Math.PI/2;this.book.position.y=-.03;this.scene.add(this.book);this.cssBook.position.copy(this.book.position);
   const pmrem=new THREE.PMREMGenerator(this.renderer),room=new RoomEnvironment();
@@ -138,17 +139,19 @@ export class BookScene {
   const materials=[this.coverMaterial,this.coverMaterial,this.coverMaterial,this.coverMaterial,new THREE.MeshStandardMaterial({map:this.coverMap,bumpMap:leather,bumpScale:.008,roughness:.43,metalness:.32,envMapIntensity:.16}),this.coverMaterial];
   this.cover=new THREE.Mesh(new RoundedBoxGeometry(W+.12,H+.16,.07,3,.022),materials);this.cover.position.x=W/2;this.cover.castShadow=true;this.cover.receiveShadow=true;this.coverPivot.add(this.cover);
   this.restPages=[-1,1].map(side=>{
-   const geo=new THREE.PlaneGeometry(W,H,24,1);const mesh=new THREE.Mesh(geo,new THREE.MeshBasicMaterial({color:'#ffffff',side:THREE.DoubleSide,toneMapped:false}));mesh.position.set(side*W/2,0,.25);mesh.rotation.y=side*.015;mesh.receiveShadow=true;this.book.add(mesh);return mesh;
+   const geo=new THREE.PlaneGeometry(W,H,64,10);const positions=geo.attributes.position;
+   for(let i=0;i<positions.count;i++){const u=(positions.getX(i)/W+.5);positions.setZ(i,paperHeight(side>0?u:1-u));}geo.computeVertexNormals();
+   const mesh=new THREE.Mesh(geo,new THREE.MeshBasicMaterial({color:'#ffffff',side:THREE.DoubleSide,toneMapped:false}));mesh.position.set(side*W/2,0,.25);mesh.rotation.y=0;mesh.receiveShadow=true;this.book.add(mesh);return mesh;
   });
   this.turnGeometry=new THREE.PlaneGeometry(W,H,64,10);this.turnGeometry.translate(W/2,0,0);
   this.turnFront=new THREE.MeshBasicMaterial({side:THREE.FrontSide,toneMapped:false});this.turnBack=new THREE.MeshBasicMaterial({side:THREE.BackSide,toneMapped:false});
-  this.turnPage=new THREE.Mesh(this.turnGeometry,this.turnFront);this.turnPage.position.z=.274;this.turnPage.castShadow=true;this.turnPage.receiveShadow=true;this.book.add(this.turnPage);
-  for(const material of [this.turnFront,this.turnBack])material.onBeforeCompile=shader=>{
+  this.turnPage=new THREE.Mesh(this.turnGeometry,this.turnFront);this.turnPage.position.z=.253;this.turnPage.castShadow=true;this.turnPage.receiveShadow=true;this.book.add(this.turnPage);
+  for(const material of [...this.restPages.map(mesh=>mesh.material),this.turnFront,this.turnBack])material.onBeforeCompile=shader=>{
    shader.vertexShader='varying vec3 vLeafNormal;\n'+shader.vertexShader;shader.vertexShader=shader.vertexShader.replace('#include <begin_vertex>','#include <begin_vertex>\nvLeafNormal=normalize(normalMatrix*normal);');
    shader.fragmentShader='varying vec3 vLeafNormal;\n'+shader.fragmentShader;shader.fragmentShader=shader.fragmentShader.replace('#include <map_fragment>','#include <map_fragment>\ndiffuseColor.rgb*=.65+.35*sqrt(abs(dot(normalize(vLeafNormal),normalize(vec3(-.22,.12,1.)))));');
   };
-  this.pageShadows=[-1,1].map(side=>{const mesh=new THREE.Mesh(new THREE.PlaneGeometry(W,H),new THREE.ShadowMaterial({color:'#20150a',opacity:.24}));mesh.position.set(side*W/2,0,.253);mesh.rotation.y=side*.015;mesh.receiveShadow=true;this.book.add(mesh);return mesh;});
-  this.turnReverse=new THREE.Mesh(this.turnGeometry,this.turnBack);this.turnReverse.position.z=.271;this.turnReverse.castShadow=true;this.book.add(this.turnReverse);
+  this.pageShadows=[-1,1].map((side,i)=>{const mesh=new THREE.Mesh(this.restPages[i].geometry.clone(),new THREE.ShadowMaterial({color:'#20150a',opacity:.24,depthWrite:false}));mesh.position.set(side*W/2,0,.2505);mesh.rotation.y=0;mesh.receiveShadow=true;this.book.add(mesh);return mesh;});
+  this.turnReverse=new THREE.Mesh(this.turnGeometry,this.turnBack);this.turnReverse.position.z=.251;this.turnReverse.castShadow=true;this.book.add(this.turnReverse);
   this.raycaster=new THREE.Raycaster();this.mouse=new THREE.Vector2();
  }
  makeEnvironment() {
@@ -161,12 +164,17 @@ export class BookScene {
   const key=`${lang}:${mode}`;
   if(!this.preparations.has(key))this.preparations.set(key,Promise.all([this.environmentReady,this.leatherReady,this.cache.prepareAll(lang,mode)]).then(async()=>{
    if(!this.warmed){this.lang=lang;this.restPages.forEach((mesh,i)=>{mesh.material.map=this.artwork(0,i);mesh.material.needsUpdate=true;});this.turnFront.map=this.artwork(0,1);this.turnBack.map=this.artwork(1,0,true);this.turnFront.needsUpdate=this.turnBack.needsUpdate=true;await this.renderer.compileAsync(this.scene,this.camera);this.renderer.render(this.scene,this.camera);this.warmed=true;}
-   this.dirty=true;
+   this.preparedEditions.add(key);this.dirty=true;
   }));
   return this.preparations.get(key);
  }
  artwork(index,side,reverse=false) {const value=this.cache.get(index,side,this.lang,this.compact?'compact':'wide');return value?.[reverse?'reverse':'normal'];}
- setPages(html,index,lang) {
+ setPages(html,index,lang,stationary=false) {
+  if(!stationary&&['turning','opening','closing'].includes(this.lastPhase)){
+   const pending={html,index,lang,ready:this.preparedEditions.has(`${lang}:${this.compact?'compact':'wide'}`)};this.pendingPages=pending;
+   this.prepare(lang).then(()=>{if(this.pendingPages===pending){pending.ready=true;this.dirty=true;}});return;
+  }
+  this.pendingPages=undefined;this.host.dataset.artworkLanguage=lang;
   this.htmlPages.forEach((obj,i)=>{obj.element.innerHTML=html[i];obj.element.classList.toggle('compact-folio',this.compact);});
   this.lang=lang;this.index=index;
   if(this.desiredCompact!==undefined&&this.desiredCompact!==this.compact)this.stageMode(this.desiredCompact,lang);
@@ -219,7 +227,7 @@ export class BookScene {
     else if(!p.moved) {
      const rect=host.getBoundingClientRect();this.mouse.set((e.clientX-rect.left)/rect.width*2-1,-(e.clientY-rect.top)/rect.height*2+1);this.raycaster.setFromCamera(this.mouse,this.camera);
      if(this.lastPhase==='closed' && this.raycaster.intersectObject(this.cover).length)this.onAction('open');
-     else if(this.lastPhase==='open') {const hits=this.raycaster.intersectObjects(this.restPages);if(hits.length){const local=this.book.worldToLocal(hits[0].point.clone());if(Math.abs(local.x)>W*.65)this.onAction(local.x>0?'next':'prev');}}
+     else if(['open','turning'].includes(this.lastPhase)) {const hits=this.raycaster.intersectObjects([...this.restPages,...(this.turnPage.visible?[this.turnPage]:[])]);if(hits.length){const local=this.book.worldToLocal(hits[0].point.clone());this.onAction(this.compact||this.index===0||local.x>0?'next':'prev');}}
     }
     this.pointer=null;
    }
@@ -229,8 +237,9 @@ export class BookScene {
   host.addEventListener('dblclick',()=>this.reset());host.addEventListener('pointerleave',()=>{this.hover=0;this.dirty=true;});
  }
  update(state,dt) {
+  if(this.pendingPages?.ready&&['open','closed'].includes(state.phase)){const {lang}=this.pendingPages;this.setPages(spreadHTML(state.spread,lang),state.spread,lang,true);}
   // Commit a fully uploaded layout only at a stationary book boundary.
-  if(this.pendingMode!==undefined&&['open','closed'].includes(state.phase)){
+  if(this.pendingMode!==undefined&&!this.pendingPages&&['open','closed'].includes(state.phase)){
    const {compact,lang}=this.pendingMode;this.pendingMode=undefined;
    if(compact===this.desiredCompact&&lang===this.lang){this.compact=compact;this.setPages(this.htmlPages.map(obj=>obj.element.innerHTML),state.spread,this.lang);}
   }
@@ -249,11 +258,11 @@ export class BookScene {
    const curve=Array.from({length:65},(_,col)=>pagePoint(col/64,p,W));
    for(let row=0;row<=10;row++)for(let col=0;col<=64;col++) {
     const u=col/64,pt=curve[col],idx=row*65+col,y=H/2-row*H/10;
-    pos.setXYZ(idx,pt.x,y,pt.z+Math.sin(p*Math.PI)*.045*u*u*Math.sin(y/H*Math.PI));
+    pos.setXYZ(idx,pt.x,y,pt.z+paperHeight(u)+Math.sin(p*Math.PI)*.045*u*u*Math.cos(y/H*Math.PI));
    }
    pos.needsUpdate=true;this.turnGeometry.computeVertexNormals();
   }
-  const htmlVisible=state.phase==='open' && state.spread===state.target;
+  const htmlVisible=state.phase==='open' && state.spread===state.target&&!this.pendingPages;
   this.htmlPages.forEach((obj,i)=>{obj.element.style.visibility=htmlVisible?'visible':'hidden';obj.element.inert=!htmlVisible||(this.compact&&i!==this.focusSide);obj.element.setAttribute('aria-hidden',String(obj.element.inert));});
   const targetX=this.compact?W/2*(1-open)+(this.focusSide?1:-1)*W/2*open:(1-open)*W*.18;
   const viewWidth=this.compact?W*1.08:2*W*1.08;

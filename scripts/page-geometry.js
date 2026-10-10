@@ -2,7 +2,7 @@
 /** @param {number} u @param {number} progress @param {number} width */
 export function pagePoint(u,progress,width) {
   const p=Math.max(0,Math.min(1,progress));
-  const eased=p*p*(3-2*p), curl=Math.sin(p*Math.PI);
+  const eased=p*p*(3-2*p), curl=Math.sin(eased*Math.PI);
   let x=0,z=0;
   const steps=32, du=u/steps;
   for(let i=0;i<steps;i++) {

@@ -7,7 +7,7 @@ import {relative} from 'node:path';
 import {createHash} from 'node:crypto';
 import {spreadHTML,projectImages} from '../scripts/book-content.js';
 const target='assets/book-pages';await mkdir(target,{recursive:true});
-const browser=await chromium.launch();const page=await browser.newPage({viewport:{width:1440,height:1000},deviceScaleFactor:1});
+const browser=await chromium.launch();const page=await browser.newPage({viewport:{width:1440,height:1000},deviceScaleFactor:1.5});
 // Font requests must originate on the dev server, not an opaque about:blank document.
 await page.route('**/*',route=>route.request().resourceType()==='script'?route.abort():route.continue());
 await page.goto('http://127.0.0.1:4173');
@@ -32,5 +32,5 @@ await browser.close();
 const fonts=(await readdir('assets/fonts')).filter(name=>name.endsWith('.woff2')).sort().map(name=>`assets/fonts/${name}`);
 const sources=[...stylePaths,'scripts/book-content.js','scripts/content.js','tools/bake-book-pages.js','assets/scene-v2/paper-grain.svg',...Object.values(projectImages).map(url=>relative(process.cwd(),fileURLToPath(url))),...fonts];
 const hash=createHash('sha256');for(const path of sources)hash.update(await readFile(path));
-await writeFile(`${target}/manifest.json`,JSON.stringify({sourceHash:hash.digest('hex'),sources,dimensions:[600,838],pages:48,overflow},null,2)+'\n');
+await writeFile(`${target}/manifest.json`,JSON.stringify({sourceHash:hash.digest('hex'),sources,dimensions:[900,1257],pages:48,overflow},null,2)+'\n');
 if(overflow.length)throw new Error(`Page artwork overflow: ${JSON.stringify(overflow)}`);

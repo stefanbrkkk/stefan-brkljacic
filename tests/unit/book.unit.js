@@ -40,3 +40,9 @@ test('reopening during cover closure resumes rather than getting stuck closed',(
  for(let i=0;i<15;i++)state.tick(1);
  assert.equal(state.phase,'open');assert.equal(state.spread,1);
 });
+test('the turning leaf stays above both resting pages throughout its travel',()=>{
+ for(let step=0;step<=200;step++)for(let col=0;col<=64;col++){
+  const point=pagePoint(col/64,step/200,2.9);
+  assert.ok(point.z>=-1e-9,`sheet penetrates the resting page at progress ${step/200}, column ${col}: ${point.z}`);
+ }
+});

@@ -43,7 +43,7 @@ export async function initBook() {
   if(scene)await scene.prepare(lang());
   if(version!==requestVersion)return;leaf=side;
   state.go(index);$('chapterMenu').hidden=true;$('chapterToggle').setAttribute('aria-expanded','false');
-  if(!scene||reduced.matches)for(let i=0;i<15;i++)state.tick(2);
+  if(root.classList.contains('static-book')||reduced.matches)for(let i=0;i<15;i++)state.tick(2);
   render();
   history.replaceState(null,'',`#book/${state.target+1}${small()&&scene?'/'+(leaf?'right':'left'):''}`);
   if(small())window.scrollTo({top:0,behavior:'instant'});
@@ -54,7 +54,7 @@ export async function initBook() {
    if(small()&&scene){const destination=Math.max(0,Math.min(11,state.target*2+leaf+(type==='next'?1:-1)));request(Math.floor(destination/2),destination%2);}
    else request(state.target+(type==='next'?1:-1));
   }
-  else if(type==='close'){requestVersion++;state.close();if(!scene)state.tick(2);history.replaceState(null,'','#top');render();$('openBook').focus({preventScroll:true});}
+  else if(type==='close'){requestVersion++;state.close();if(root.classList.contains('static-book')||reduced.matches)state.tick(2);else if(!root.classList.contains('scene-ready'))state.phase='closed';history.replaceState(null,'','#top');render();$('openBook').focus({preventScroll:true});}
  };
  const setReading=(value,target=null)=>{
   reading=value;root.classList.toggle('reading-mode',value);$('readingContent').hidden=!value;$('readingToolbar').hidden=!value;
@@ -63,7 +63,7 @@ export async function initBook() {
  };
  const openCase=(id,opener)=>{
   const p=projects.find(p=>p.id===id);if(!p)return;const d=copy[lang()];
-  $('caseContent').innerHTML=`<div class="page-kicker">${d[id+'Status']}</div><h2 id="caseTitle">${p.title}</h2><figure class="case-preview"><a href="${projectImages[id]}" target="_blank" rel="noopener noreferrer"><img src="${projectImages[id]}" alt="${p.title.replace('<br>',' ')}" width="1200" height="800"><span>${lang()==='sr'?'Otvori celu sliku ↗':'Open full image ↗'}</span></a></figure><dl>${['Problem','Role','Constraints','Solution','Deliverables'].map((field,i)=>`<div><dt>${d[['caseProblem','caseContribution','caseConstraint','caseSolution','caseDeliverables'][i]]}</dt><dd>${d[id+field]}</dd></div>`).join('')}</dl><a class="page-contact" href="${p.url}" target="_blank" rel="noopener noreferrer">${bookCopy[lang()].live}</a>`;
+  $('caseContent').innerHTML=`<div class="page-kicker">${d[id+'Status']}</div><h2 id="caseTitle">${p.title}</h2><figure class="case-preview"><a href="${p.url}" target="_blank" rel="noopener noreferrer"><img src="${projectImages[id]}" alt="${p.title.replace('<br>',' ')}" width="1200" height="800"><span>${bookCopy[lang()].live}</span></a></figure><dl>${['Problem','Role','Constraints','Solution','Deliverables'].map((field,i)=>`<div><dt>${d[['caseProblem','caseContribution','caseConstraint','caseSolution','caseDeliverables'][i]]}</dt><dd>${d[id+field]}</dd></div>`).join('')}</dl><a class="page-contact" href="${p.url}" target="_blank" rel="noopener noreferrer">${bookCopy[lang()].live}</a>`;
   caseOpener=opener;$('caseDialog').showModal();$('caseClose').focus();
  };
  document.addEventListener('click',event=>{

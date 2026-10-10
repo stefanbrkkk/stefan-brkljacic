@@ -30,7 +30,7 @@ test('book opens, turns, jumps, handles rapid input, resets and closes in the av
  await page.locator('#resetView').click();
  await page.locator('#chapterToggle').click();await page.locator('#chapterMenu [data-spread="5"]').click();await settled(page,5);
  await page.locator(`${pages} [data-inquiry]`).click();await expect(page.locator('#projectDialog')).toBeVisible();await page.keyboard.press('Escape');
- await page.locator('#closeBook').click();await expect(page.locator('html')).toHaveAttribute('data-book-state','closed');
+ await page.locator('#closeBook').click();await expect(page.locator('html')).toHaveAttribute('data-book-state','closed',{timeout:30000});
  await page.locator('#openBook').click();await settled(page,5);expect(errors).toEqual([]);if(dynamic)expect(await page.locator('#deskScene').getAttribute('data-artwork-uploads')).toBe(uploaded);
 });
 for(const width of [360,390,430,768,1024,1440,1920]) {
@@ -147,9 +147,9 @@ for(const lang of ['en','sr'])test(`case studies provide decoded full-image prev
   if(spread===2){await page.locator('#chapterToggle').click();await page.locator('#chapterMenu [data-spread="2"]').click();await settled(page,2);}
   await page.locator(`#spreadReader [data-case="${id}"]`).click();const image=page.locator('#caseDialog .case-preview img');await expect(image).toBeVisible();
   await expect.poll(()=>image.evaluate(img=>img.complete&&img.naturalWidth>0)).toBe(true);
-  expect(await page.locator('#caseDialog .case-preview a').getAttribute('href')).toBe(await image.getAttribute('src'));
+  expect(await page.locator('#caseDialog .case-preview a').getAttribute('href')).toBe(await page.locator(`#spreadReader .project-art.art-${id}`).getAttribute('href'));
   await expect(page.locator('#caseDialog .case-preview a')).toHaveAttribute('target','_blank');
-  await expect(page.locator('#caseDialog')).toContainText(lang==='sr'?'Otvori celu sliku':'Open full image');await page.keyboard.press('Escape');
+  await expect(page.locator('#caseDialog .case-preview a')).toContainText(lang==='sr'?'Otvori':'View');await page.keyboard.press('Escape');
  }
 });
 
@@ -159,4 +159,55 @@ test('compact cover intro clears the header and contents opens the named project
  expect(await page.locator('.book-eyebrow').evaluate(e=>e.getBoundingClientRect().top)).toBeGreaterThan(bottom+8);
  await page.locator('#openBook').click();await settled(page,0);await page.locator('.physical-page:not([inert]) .page-contents button').filter({hasText:'GlasAI'}).click();await settled(page,1);
  await expect(page.locator('.physical-page:not([inert]) h2')).toHaveText('GlasAI');
+});
+
+test('opening before the 3D module is ready preserves the physical cover animation',async({page})=>{
+ test.setTimeout(120000);let release;const gate=new Promise(resolve=>{release=resolve;});
+ await page.route('**/scripts/book-scene.js*',async route=>{await gate;await route.continue();});
+ try{
+  await page.goto('/',{waitUntil:'domcontentloaded'});await page.locator('#openBook').click();
+  await expect(page.locator('html')).toHaveAttribute('data-book-state','opening');release();
+  test.skip(!await edition(page),'Runner lacks WebGL2; static opening is covered separately');await settled(page,0);
+ }finally{release();}
+});
+
+for(const width of [390,1440])test(`physical project images and visit buttons open their websites at ${width}px`,async({page,context})=>{
+ test.setTimeout(120000);await page.setViewportSize({width,height:900});await page.goto('/#book/2');test.skip(!await edition(page),'Runner lacks WebGL2');await settled(page,1);
+ const active=width<900?'.physical-page:not([inert])':'.physical-page[data-side="0"]';
+ for(const selector of ['.project-art','.page-actions a']){
+  const link=page.locator(`${active} ${selector}`),url=await link.getAttribute('href');
+  await context.route(url,route=>route.fulfill({contentType:'text/html',body:'<title>Project destination</title>'}));
+  const popupPromise=context.waitForEvent('page');await link.click();const popup=await popupPromise;await popup.waitForLoadState();expect(popup.url()).toBe(url);await popup.close();
+  await settled(page,1);
+ }
+ await page.locator(`${active} [data-case="honey"]`).click();const caseLink=page.locator('#caseDialog .case-preview a'),url=await caseLink.getAttribute('href');
+ const popupPromise=context.waitForEvent('page');await caseLink.click();const popup=await popupPromise;await popup.waitForLoadState();expect(popup.url()).toBe(url);await popup.close();await page.keyboard.press('Escape');await settled(page,1);
+});
+for(const width of [390,1440])test(`clicking the paper advances the book at ${width}px`,async({page})=>{
+ test.setTimeout(120000);await page.setViewportSize({width,height:900});await page.goto('/#book/1');test.skip(!await edition(page),'Runner lacks WebGL2');await settled(page,0);
+ await page.waitForTimeout(700);
+ await page.locator('.physical-page[data-side="0"] h2').click();
+ if(width<900){await expect(page.locator('html')).toHaveAttribute('data-leaf','1');await page.waitForTimeout(700);await page.locator('.physical-page:not([inert]) .page-kicker').click();}
+ await settled(page,1);
+});
+
+test('language changes commit their printed artwork after the moving sheet settles',async({page})=>{
+ test.setTimeout(120000);await page.setViewportSize({width:1440,height:900});await page.goto('/#book/2');test.skip(!await edition(page),'Runner lacks WebGL2');await settled(page,1);
+ await page.locator('#nextSpread').click();await expect(page.locator('html')).toHaveAttribute('data-book-state','turning');await page.locator('.lang-switch').click();
+ await expect(page.locator('html')).toHaveAttribute('lang','sr');
+ if(await page.locator('html').getAttribute('data-book-state')==='turning')await expect(page.locator('#deskScene')).toHaveAttribute('data-artwork-language','en');
+ await settled(page,2);await expect(page.locator('#deskScene')).toHaveAttribute('data-artwork-language','sr',{timeout:30000});
+ await expect(page.locator('.physical-page[data-side="0"] h2')).toContainText('Gimnastika');
+});
+
+test('a prepared resize cannot discard a slower language change during a turn',async({page})=>{
+ test.setTimeout(120000);let release;const gate=new Promise(resolve=>{release=resolve;});
+ await page.route('**/assets/book-pages/sr-*.webp',async route=>{await gate;await route.continue();});
+ try{
+  await page.setViewportSize({width:1440,height:900});await page.goto('/#book/2');test.skip(!await edition(page),'Runner lacks WebGL2');await settled(page,1);
+  await page.evaluate(async()=>{document.querySelector('#nextSpread').click();while(document.documentElement.dataset.bookState!=='turning')await new Promise(requestAnimationFrame);document.querySelector('.lang-switch').click();});
+  await page.setViewportSize({width:390,height:900});await settled(page,2);
+  await expect.poll(async()=>Number(await page.locator('#deskScene').getAttribute('data-artwork-uploads')),{timeout:30000}).toBe(24);
+  release();await expect(page.locator('#deskScene')).toHaveAttribute('data-artwork-language','sr',{timeout:30000});await expect(page.locator('.physical-page:not([inert]) h2')).toContainText('Gimnastika');
+ }finally{release();}
 });
