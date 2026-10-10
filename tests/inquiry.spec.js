@@ -1,5 +1,7 @@
 import { test, expect } from '@playwright/test';
 
+test.beforeEach(async ({page}) => { await page.emulateMedia({reducedMotion:'reduce'}); });
+
 const dialog = page => page.locator('#projectDialog');
 const message = page => page.locator('#projectMessagePreview');
 const openContact = async page => {
@@ -12,6 +14,7 @@ const openContact = async page => {
 for (const closeMethod of ['close', 'escape', 'backdrop']) {
   test(`service openers restore their own focus after ${closeMethod}`, async ({ page }) => {
     await page.goto('/');
+    if (await page.locator('html').evaluate(el => el.classList.contains('book-ready'))) await page.locator('#readingToggle').click();
     await openContact(page);
     await page.locator('#projectDialogClose').click();
     for (const [index, type] of ['website', 'prototype', 'polish'].entries()) {
@@ -29,7 +32,8 @@ for (const closeMethod of ['close', 'escape', 'backdrop']) {
 
 test('all primary entry points use the guided dialog and keyboard stays contained', async ({ page }) => {
   await page.goto('/');
-  for (const opener of await page.locator('[data-i18n="ctaStart"],#projectStarterInline,#projectSignalButton').all()) {
+    if (await page.locator('html').evaluate(el => el.classList.contains('book-ready'))) await page.locator('#readingToggle').click();
+  for (const opener of await page.locator('.header-contact,[data-i18n="ctaStart"],#projectStarterInline,#projectSignalButton').all()) {
     if (!await opener.isVisible()) continue;
     await opener.click();
     await expect(dialog(page)).toBeVisible();
@@ -45,6 +49,7 @@ test('all primary entry points use the guided dialog and keyboard stays containe
 for (const language of ['en', 'sr']) {
   test(`optional context and editable message survive URL encoding in ${language}`, async ({ page }) => {
     await page.goto('/');
+    if (await page.locator('html').evaluate(el => el.classList.contains('book-ready'))) await page.locator('#readingToggle').click();
     if (language === 'sr') await page.locator('.lang-switch').click();
     await openContact(page);
     await page.locator('[data-project-type="website"]').click();
@@ -73,6 +78,7 @@ for (const language of ['en', 'sr']) {
 
 test('type and language changes keep visitor edits until an explicit reset', async ({ page }) => {
   await page.goto('/');
+    if (await page.locator('html').evaluate(el => el.classList.contains('book-ready'))) await page.locator('#readingToggle').click();
   await openContact(page);
   await page.locator('[data-project-type="website"]').click();
   await message(page).fill('Please keep my carefully edited draft.');
@@ -96,6 +102,7 @@ for (const clipboard of ['denied', 'unsupported']) {
       document.execCommand = () => false;
     }, clipboard);
     await page.goto('/');
+    if (await page.locator('html').evaluate(el => el.classList.contains('book-ready'))) await page.locator('#readingToggle').click();
     await openContact(page);
     await page.locator('[data-project-type="qa"]').click();
     await page.locator('#projectCopyMessage').click();
@@ -119,6 +126,7 @@ test('real browser clipboard permission copies the complete composed message', a
   test.skip(browserName !== 'chromium', 'Playwright clipboard-read/write permission grants are Chromium-only; Firefox reports Unknown permission: clipboard-read and WebKit does not expose equivalent grants. Denied/unsupported recovery stays enabled for every engine.');
   await context.grantPermissions(['clipboard-read', 'clipboard-write']);
   await page.goto('/');
+    if (await page.locator('html').evaluate(el => el.classList.contains('book-ready'))) await page.locator('#readingToggle').click();
   await openContact(page);
   await page.locator('[data-project-type="qa"]').click();
   await message(page).fill('Question & answer\nŽeljko');
@@ -134,6 +142,7 @@ test('no JavaScript keeps ordinary direct email usable', async ({ browser }) => 
   const context = await browser.newContext({ javaScriptEnabled: false });
   const page = await context.newPage();
   await page.goto('/');
+    if (await page.locator('html').evaluate(el => el.classList.contains('book-ready'))) await page.locator('#readingToggle').click();
   await expect(page.locator('#projectStarterInline')).toHaveAttribute('href', /^mailto:stefanbrkk@gmail.com/);
   await expect(page.locator('[data-i18n="emailDirect"]').first()).toHaveAttribute('href', /^mailto:/);
   await context.close();
@@ -143,6 +152,7 @@ for (const language of ['en', 'sr']) {
   test(`narrow ${language} dialog keeps all actions reachable`, async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto('/');
+    if (await page.locator('html').evaluate(el => el.classList.contains('book-ready'))) await page.locator('#readingToggle').click();
     if (language === 'sr') await page.locator('.lang-switch').click();
     await openContact(page);
     await page.locator('[data-project-type="polish"]').click();
@@ -166,6 +176,7 @@ test('LinkedIn profile action never claims an unperformed clipboard copy', async
     document.execCommand = () => false;
   });
   await page.goto('/');
+    if (await page.locator('html').evaluate(el => el.classList.contains('book-ready'))) await page.locator('#readingToggle').click();
   await openContact(page);
   await page.locator('[data-project-type="qa"]').click();
   await page.route('https://www.linkedin.com/**', route => route.fulfill({ body: 'Profile destination intercepted for test.' }));

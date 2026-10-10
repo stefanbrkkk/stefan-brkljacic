@@ -1,0 +1,1 @@
+These tests describe the superseded scroll/decomposition design. They are retained as history and excluded from the cinematic-book suite. Content, project disclosures, original image/metadata checks and inquiry behavior remain active. Book state, fallback, deep-linking, language and responsive checks replace the old presentation assertions.

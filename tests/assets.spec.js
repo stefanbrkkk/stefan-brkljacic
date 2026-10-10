@@ -1,4 +1,6 @@
 import { test, expect } from '@playwright/test';
+
+test.beforeEach(async ({page}) => { await page.emulateMedia({reducedMotion:'reduce'}); });
 import { decodeLoadedImage } from './helpers/journey.js';
 import { readFile } from 'node:fs/promises';
 
@@ -11,6 +13,7 @@ test('local assets and ESM entry point load without embedded payloads', async ({
   const errors = [];
   page.on('pageerror', error => errors.push(error.message));
   await page.goto('/');
+    if (await page.locator('html').evaluate(el => el.classList.contains('book-ready'))) await page.locator('#readingToggle').click();
   await expect(page.locator('html')).toHaveClass(/language-ready/);
   await expect(page.locator('html')).toHaveClass(/inquiry-ready/);
   for (const image of await page.locator('img.shot').all()) {
@@ -21,7 +24,7 @@ test('local assets and ESM entry point load without embedded payloads', async ({
     expect(dimensions.src).toMatch(/^assets\/images\//);
     expect((await request.get(dimensions.src)).status()).toBe(200);
   }
-  const css = await (await request.get('styles/site.css')).text();
+  const css = await (await request.get('styles/site.css?direct')).text();
   const fonts = [...css.matchAll(/url\(['"]?([^)'" ]+\.woff2)['"]?\)/g)].map(match => match[1]);
   expect(fonts).toHaveLength(6);
   for (const font of fonts) expect((await request.get(new URL(font, 'http://127.0.0.1:4173/styles/site.css').href)).status()).toBe(200);
@@ -36,6 +39,7 @@ test('controller imports do not require DOM or initialize the page', async () =>
 
 test('owned device captures have local sources, decoded pixels and declared dimensions', async ({ page, request }) => {
   await page.goto('/');
+    if (await page.locator('html').evaluate(el => el.classList.contains('book-ready'))) await page.locator('#readingToggle').click();
   await page.locator('.device-proof-grid').scrollIntoViewIfNeeded();
   const images = page.locator('.device-proof img');
   await expect(images).toHaveCount(3);
@@ -64,6 +68,7 @@ test('capture provenance and social/entity metadata agree with owned assets', as
     expect(createHash('sha256').update(await response.body()).digest('hex')).toBe(capture.imageSha256);
   }
   await page.goto('/');
+    if (await page.locator('html').evaluate(el => el.classList.contains('book-ready'))) await page.locator('#readingToggle').click();
   const canonical = 'https://stefan-brkljacic.vercel.app/';
   await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', canonical);
   await expect(page.locator('meta[property="og:url"]')).toHaveAttribute('content', canonical);
@@ -103,6 +108,7 @@ for (const language of ['en','sr']) {
     await page.route('**/assets/projects/*.jpg', route => route.abort('failed'));
     await page.route('**/assets/images/*.jpg', route => route.abort('failed'));
     await page.goto('/');
+    if (await page.locator('html').evaluate(el => el.classList.contains('book-ready'))) await page.locator('#readingToggle').click();
     if (language === 'sr') await page.locator('.lang-switch').click();
     for (const project of await page.locator('.project').all()) {
       await project.locator('img').scrollIntoViewIfNeeded();
@@ -128,6 +134,7 @@ test('no JavaScript and failed captures leave native titles, alt text and links 
   const page = await context.newPage();
   await page.route('**/assets/projects/*.jpg', route => route.abort('failed'));
   await page.goto('/');
+    if (await page.locator('html').evaluate(el => el.classList.contains('book-ready'))) await page.locator('#readingToggle').click();
   for (const proof of await page.locator('.device-proof').all()) {
     await proof.scrollIntoViewIfNeeded();
     await expect(proof.locator('.device-proof-label')).toBeVisible();
@@ -145,6 +152,7 @@ test('320px Serbian image-failure instructions fit inside every device frame', a
   await page.emulateMedia({ reducedMotion:'reduce' });
   await page.route('**/assets/projects/*.jpg', route => route.abort('failed'));
   await page.goto('/');
+    if (await page.locator('html').evaluate(el => el.classList.contains('book-ready'))) await page.locator('#readingToggle').click();
   await page.locator('.lang-switch').click();
   for (const proof of await page.locator('.device-proof').all()) {
     await proof.scrollIntoViewIfNeeded();

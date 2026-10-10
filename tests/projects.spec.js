@@ -1,4 +1,6 @@
 import { test, expect } from '@playwright/test';
+
+test.beforeEach(async ({page}) => { await page.emulateMedia({reducedMotion:'reduce'}); });
 import { decodeLoadedImage } from './helpers/journey.js';
 
 const evidence = () => test.info().outputPath('evidence');
@@ -12,6 +14,7 @@ const projects = [
 for (const language of ['en', 'sr']) {
   test(`project evidence stays truthful, translated and inspectable in ${language}`, async ({ page }) => {
     await page.goto('/');
+    if (await page.locator('html').evaluate(el => el.classList.contains('book-ready'))) await page.locator('#readingToggle').click();
     if (language === 'sr') await page.locator('.lang-switch').click();
     await expect(page.locator('.project').first().locator('h3')).toHaveText(/Harmonije\s*Panonije/);
     for (const project of projects) {
@@ -54,8 +57,9 @@ for (const mode of ['no-js', 'blocked-main']) {
   test(`${mode}: native project disclosures work with keyboard`, async ({ browser }) => {
     const context = await browser.newContext({ javaScriptEnabled: mode !== 'no-js', viewport: { width: 390, height: 844 } });
     const page = await context.newPage();
-    if (mode === 'blocked-main') await page.route('**/scripts/main.js', route => route.abort('failed'));
+    if (mode === 'blocked-main') await page.route('**/scripts/main.js**', route => route.abort('failed'));
     await page.goto('/');
+    if (await page.locator('html').evaluate(el => el.classList.contains('book-ready'))) await page.locator('#readingToggle').click();
     await expect(page.locator('html')).toHaveAttribute('lang', 'en');
     await expect(page.locator('.lang-switch')).toBeHidden();
     for (const project of projects) {
@@ -79,6 +83,7 @@ for (const [language, viewport] of [['en', { width: 1363, height: 936 }], ['sr',
     await page.setViewportSize(viewport);
     await page.emulateMedia({ reducedMotion: 'reduce' });
     await page.goto('/');
+    if (await page.locator('html').evaluate(el => el.classList.contains('book-ready'))) await page.locator('#readingToggle').click();
     if (language === 'sr') await page.locator('.lang-switch').click();
     const project = page.locator('[data-project="honey"]');
     await project.locator('summary').click();

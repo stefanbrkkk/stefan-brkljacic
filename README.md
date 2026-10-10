@@ -1,66 +1,41 @@
-# Stefan Brkljačić — Portfolio
+# Stefan Brkljačić — cinematic portfolio
 
-Static personal portfolio for a Belgrade-based web developer and AI product builder. The main journey is offer → selected work → services/FAQ → process → about → contact, with English and Serbian copy, native expandable case studies and one desktop decomposition animation.
+A real Three.js hardcover book on a procedural walnut desk, with six bilingual editorial spreads, deformable pages, verified project imagery, accessible case studies and the original editable project inquiry flow.
 
-[Live portfolio](https://stefan-brkljacic.vercel.app/)
+## Run and build
 
-## Run locally
-
-Use Node.js **24.19.0** and npm. Install the exact locked dependencies, then serve the repository root:
+Node 24 and npm:
 
 ```sh
 npm ci
 npm run dev
+npm run build
+npm run preview
 ```
 
-The preview is at **http://127.0.0.1:4173**. It serves HTML, CSS, ES modules and local assets; there is no framework build step. Deploy the repository root with a static host.
+Vite serves the development site at http://127.0.0.1:4173. Production output is `dist/`. `vercel.json` configures the existing Git-connected project to build and publish that output.
 
-## Checks
+## Interaction
 
-| Command | Actual script / coverage |
-|---|---|
-| `npm run dev` | `node tools/serve.js` — static preview on port 4173 |
-| `npm run lint` | `eslint scripts tests tools *.config.js && stylelint styles/site.css` — shipped modules, tests, server, tools and JavaScript configurations; CSS |
-| `npm run validate:html` | `html-validate index.html` — recommended HTML rules |
-| `npm run validate:translations` | `node tools/check-translations.js` — EN/SR key parity, nonempty strings and every authored HTML translation binding |
-| `npm test` | `node --test tests/unit/*.unit.js` — missing/empty/mismatched dictionary and binding regressions |
-| `npm run test:e2e` | `playwright test` — Chromium, Firefox and WebKit browser projects |
-| `npm run check` | `npm run lint && npm run validate:html && npm run validate:translations && npm test && npm run test:e2e` — complete local/CI check |
+Click the cover or **Open the book**. Use page edges, arrows, keyboard Left/Right, or the chapter menu to turn/jump. Drag the scene to rotate, wheel/pinch to zoom, and double-click or reset to restore orientation. Touch swipes turn pages; two fingers rotate and pinch. Escape closes the chapter menu or book. Chapter links use `#book/1` through `#book/6`; existing `#work`, `#services`, `#about` and `#contact` links open the complete reading view.
 
-Install matching browser binaries and operating-system dependencies before browser tests:
+Desktop resting pages use semantic HTML via Three.js CSS3DRenderer. The moving sheet has 64 horizontal subdivisions and an arc-length-preserving integrated tangent curve, with separate front/back artwork. The state controller serializes transitions and retains a bounded destination during rapid input. The camera is constrained to readable angles. GPU rendering stops when nothing changes, rendering resumes on interaction, and hidden tabs/dialogs pause scene updates.
+
+Below 1100px and in short windows, a 3D preview accompanies readable HTML spreads. Reduced motion, failed WebGL initialization and context loss provide a static edition. With JavaScript disabled, the full original portfolio and native case-study disclosures remain available.
+
+## Content and contact
+
+All original project claims, service scope, timings, FAQ, education and social links remain in the expanded reading view. Harmonije is an inquiry catalogue; GlasAI is a concept demo; Gimnastika Kraguj is a public preview; Sheetpost simulates KSeF submission. No results or credentials have been invented. English and Serbian Latin are supported, with saved language preference.
+
+The inquiry dialog keeps optional context and edited drafts in page memory. Visitors explicitly choose mailto, Gmail or copy-to-clipboard. Nothing sends automatically. Project imagery/fonts retain their original provenance and licenses. Desk models/material textures are procedural originals.
+
+## Verification
 
 ```sh
-npx playwright install --with-deps
+npx playwright install chromium firefox webkit
 npm run check
 ```
 
-Browser tests start their own preview. A focused run can use `npm run test:e2e -- --project=chromium tests/content.spec.js`. Each test keeps screenshots and traces under its unique Playwright output directory, avoiding cross-engine overwrites. Node unit files are excluded from Playwright discovery.
+`check` runs JS/CSS lint, HTML validation, translation parity, checked JavaScript types for the transition/deformation core, unit tests, a production build and Playwright across three engines. Legacy tests for the retired scroll/decomposition design are retained under `tests/legacy`; active project, asset and inquiry tests remain alongside book-specific coverage.
 
-CI uses the digest-pinned official **Playwright 1.63.0 Noble container**, matching `package-lock.json`, with Node 24.19.0. GitHub actions are pinned to verified full release commit SHAs. See [runtime and CI provenance](docs/verification/runtime.md). Workflow configuration is not a claim of an observed CI pass.
-
-Stylelint retains syntax, unknown-property, duplicate-declaration, empty-block and selector-repeat checks. Existing intentional refinement rules have individual selector-repeat exceptions so their precedence over intervening state rules remains explicit. State, responsive and capability overrides use deliberate descending specificity; its ordering warning is disabled. The ID naming pattern accepts existing camelCase DOM identifiers as well as kebab-case. HTML validation permits explicit `for` attributes on labels wrapping their controls. These conventions do not disable accessible-name or hidden-focusable checks.
-
-## Content and behavior
-
-- [Harmonije Panonije](https://harmonije-panonije.vercel.app/): client catalogue and inquiry website.
-- [Gimnastika Kraguj](https://gimnastika-kraguj.vercel.app/): public preview.
-- [GlasAI](https://www.glasai.online/): interactive concept demo.
-- [Sheetpost](https://sheetpost-seven.vercel.app/): multilingual workflow prototype with **simulated KSeF submission**.
-
-Contribution details are stated in each case study without invented customer metrics, exclusive authorship or unconfirmed launch dates. English is the default unless a valid saved `en`/`sr` preference exists. Dictionaries are validated before translation touches the DOM; incomplete future edits leave the authored static copy available.
-
-The inquiry dialog prepares an editable draft with optional context. Draft data stays in page memory. Nothing sends automatically: visitors choose a mailto or Gmail draft, copy their message, or separately open LinkedIn. Direct email remains available with JavaScript disabled. Reduced motion, touch, narrow screens and short windows use a compact static process diagram.
-
-## Assets and verification
-
-Fonts and original project images were extracted without re-encoding. [Asset manifest](assets/manifest.json) records their byte counts/SHA256 values, the local pre-extraction measurement source and the original remote baseline. [Font license records](assets/fonts/licenses/sources.json) retain upstream OFL sources. [Dated viewport captures](assets/projects/README.md) explain the locally owned Harmonije screenshots; browser viewport renders are distinct from physical-device checks.
-
-Review documents in `docs/superpowers/reviews/` identify local implementation commit ranges. Publication can aggregate the reviewed tree into one Git Data commit parented to the then-current remote `main`; those local intermediate SHAs need not appear in published history. Tests depend on committed files and asset hashes, not local-only Git history.
-
-Automated browser coverage establishes engine behavior and emulated layouts. Physical iOS/Android devices, native browser zoom, installed mail clients, external-account delivery, screen-reader output and hardware animation performance require separate checks; see the [review ledger](docs/superpowers/reviews/2026-10-04-portfolio-remediation.md) for recorded evidence and limits.
-
-## Contact
-
-- [Email](mailto:stefanbrkk@gmail.com): stefanbrkk@gmail.com
-- [GitHub](https://github.com/stefanbrkkk)
-- [LinkedIn](https://www.linkedin.com/in/stefan-brklja%C4%8Di%C4%87-13258942a/)
+See `docs/verification/book.md` for measured verification, independent critique and limitations. The reference video was not attached, so frame-by-frame fidelity is unverified. Physical devices, screen-reader speech, installed email clients and hardware GPU performance need separate checks.

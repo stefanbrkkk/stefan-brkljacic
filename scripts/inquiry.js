@@ -103,14 +103,13 @@ export function initInquiry() {
   dialog.addEventListener('keydown', event => {
     if (event.key !== 'Tab') return;
     const controls = [...dialog.querySelectorAll('button,a[href],input,textarea')].filter(el => !el.disabled && el.getClientRects().length);
-    const first = controls[0], last = controls[controls.length - 1];
-    if (event.shiftKey && document.activeElement === first) {
-      event.preventDefault();
-      last.focus();
-    } else if (!event.shiftKey && document.activeElement === last) {
-      event.preventDefault();
-      first.focus();
-    }
+    // Safari's default Tab policy skips links. Explicit cycling keeps every
+    // contact channel reachable and prevents focus from escaping to browser UI.
+    if (!controls.length) return;
+    event.preventDefault();
+    const current = controls.indexOf(document.activeElement);
+    const next = (current + (event.shiftKey ? -1 : 1) + controls.length) % controls.length;
+    controls[next].focus();
   });
   document.getElementById('projectDialogClose').addEventListener('click', closeInquiry);
   document.querySelectorAll('[data-inquiry]').forEach(opener => {

@@ -26,7 +26,7 @@ jobs:
       - run: npm ci
       - name: Quality checks
         if: matrix.browser == 'chromium'
-        run: npm run lint && npm run validate:html && npm run validate:translations && npm test
+        run: npm run lint && npm run validate:html && npm run validate:translations && npm run typecheck && npm test && npm run build
       - name: Browser checks
         run: npm run test:e2e -- --project=${{ matrix.browser }} --max-failures=1
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
