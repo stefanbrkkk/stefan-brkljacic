@@ -1,0 +1,29 @@
+{
+  "sourceHash": "b7afc6bd993a8d97d85b8f1e8412de52c59ed41d77953b365ba37b9ceb2ac419",
+  "sources": [
+    "styles/site.css",
+    "styles/mobile.css",
+    "styles/book.css",
+    "styles/book-v2.css",
+    "scripts/book-content.js",
+    "scripts/content.js",
+    "tools/bake-book-pages.js",
+    "assets/scene-v2/paper-grain.svg",
+    "assets/projects/harmonije-desktop-2026-10-04.jpg",
+    "assets/images/glasai.jpg",
+    "assets/images/gimnastika-kraguj.jpg",
+    "assets/images/sheetpost.jpg",
+    "assets/fonts/fraunces-1.woff2",
+    "assets/fonts/fraunces-2.woff2",
+    "assets/fonts/inter-1.woff2",
+    "assets/fonts/inter-2.woff2",
+    "assets/fonts/jetbrains-mono-1.woff2",
+    "assets/fonts/jetbrains-mono-2.woff2"
+  ],
+  "dimensions": [
+    600,
+    838
+  ],
+  "pages": 48,
+  "overflow": []
+}

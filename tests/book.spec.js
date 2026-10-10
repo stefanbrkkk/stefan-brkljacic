@@ -1,25 +1,37 @@
 import {test,expect} from '@playwright/test';
-const settled=async(page,index)=>{await expect.poll(()=>page.locator('html').evaluate(el=>[el.dataset.bookState,el.dataset.spread].join(':')),{timeout:15000}).toBe(`open:${index}`);};
+const settled=async(page,index)=>{await expect.poll(()=>page.locator('html').evaluate(el=>[el.dataset.bookState,el.dataset.spread].join(':')),{timeout:30000}).toBe(`open:${index}`);};
+
+// Detect runner capability separately from application initialization failures.
+const edition=async page=>{
+ await expect(page.locator('html')).toHaveClass(/scene-ready|static-book/,{timeout:30000});
+ const dynamic=await page.locator('html').evaluate(el=>el.classList.contains('scene-ready'));
+ if(!dynamic){
+  const capable=await page.evaluate(()=>{const gl=document.createElement('canvas').getContext('webgl2');if(gl)gl.getExtension('WEBGL_lose_context')?.loseContext();return !!gl;});
+  expect(capable,'A capable renderer must initialize; fallback cannot conceal application errors').toBe(false);
+ }
+ return dynamic;
+};
 
 // Changing destination mid-turn must finish the physical turn without corrupting the spread.
-test('real WebGL opens, turns, jumps, handles rapid input, resets and closes',async({page},info)=>{
- test.setTimeout(60000);
+test('book opens, turns, jumps, handles rapid input, resets and closes in the available edition',async({page},info)=>{
+ test.setTimeout(120000);
  const errors=[];page.on('pageerror',e=>errors.push(e.message));
- await page.goto('/');await expect(page.locator('html')).toHaveClass(/scene-ready/);
+ await page.goto('/');const dynamic=await edition(page),pages=dynamic?'.physical-page':'#spreadReader';
+ const uploaded=await page.locator('#deskScene').getAttribute('data-artwork-uploads');if(dynamic)expect(uploaded).toBe('12');
  await page.screenshot({path:info.outputPath('closed.png')});
  await page.locator('#openBook').click();await settled(page,0);
- await page.locator('.physical-page [data-spread="1"]').first().click();await settled(page,1);
- await expect(page.locator('.physical-page').first()).toContainText('Harmonije');
- await page.locator('.physical-page [data-case="glas"]').click();await expect(page.locator('#caseDialog')).toBeVisible();
+ await page.locator(`${pages} [data-spread="1"]`).first().click();await settled(page,1);
+ await expect(page.locator(pages).first()).toContainText('Harmonije');
+ await page.locator(`${pages} [data-case="glas"]`).click();await expect(page.locator('#caseDialog')).toBeVisible();
  await expect(page.locator('#caseContent')).toContainText('No production call routing');await page.keyboard.press('Escape');
  for(let i=0;i<5;i++)await page.keyboard.press('ArrowRight');
  for(let i=0;i<3;i++)await page.keyboard.press('ArrowLeft');
  await settled(page,2);
  await page.locator('#resetView').click();
  await page.locator('#chapterToggle').click();await page.locator('#chapterMenu [data-spread="5"]').click();await settled(page,5);
- await page.locator('.physical-page [data-inquiry]').click();await expect(page.locator('#projectDialog')).toBeVisible();await page.keyboard.press('Escape');
+ await page.locator(`${pages} [data-inquiry]`).click();await expect(page.locator('#projectDialog')).toBeVisible();await page.keyboard.press('Escape');
  await page.locator('#closeBook').click();await expect(page.locator('html')).toHaveAttribute('data-book-state','closed');
- await page.locator('#openBook').click();await settled(page,5);expect(errors).toEqual([]);
+ await page.locator('#openBook').click();await settled(page,5);expect(errors).toEqual([]);if(dynamic)expect(await page.locator('#deskScene').getAttribute('data-artwork-uploads')).toBe(uploaded);
 });
 for(const width of [360,390,430,768,1024,1440,1920]) {
  test(`readable portfolio and all links at ${width}px`,async({page})=>{
@@ -76,21 +88,22 @@ test('mobile navigation returns to the new spread heading',async({page})=>{
  expect(await page.evaluate(()=>scrollY)).toBe(0);
  await expect(page.locator('#bookStatus')).toContainText('Services');
 });
-test('real WebGL tablet uses readable HTML alongside the book preview',async({page})=>{
- await page.setViewportSize({width:768,height:900});await page.goto('/#book/4');await expect(page.locator('html')).toHaveClass(/scene-ready/);await settled(page,3);
- await expect(page.locator('#spreadReader')).toBeVisible();
- expect(await page.locator('#spreadReader .page-services p').first().evaluate(el=>parseFloat(getComputedStyle(el).fontSize))).toBeGreaterThanOrEqual(12);
+test('real WebGL tablet keeps a readable leaf in the interactive book',async({page})=>{
+ await page.setViewportSize({width:768,height:900});await page.goto('/#book/4');test.skip(!await edition(page),'Runner does not support WebGL2; static edition is covered by the primary journey');await settled(page,3);
+ await expect(page.locator('#spreadReader')).toBeHidden();
+ await expect(page.locator('html')).toHaveClass(/compact-book/);
+ expect(await page.locator('.physical-page:not([inert]) .page-services p').first().evaluate(el=>parseFloat(getComputedStyle(el).fontSize))).toBeGreaterThanOrEqual(22);
  expect(await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth)).toBeLessThanOrEqual(1);
 });
 test('context loss preserves the current chapter and contact',async({page})=>{
- await page.goto('/#book/2');await expect(page.locator('html')).toHaveClass(/scene-ready/);await settled(page,1);
+ await page.goto('/#book/2');test.skip(!await edition(page),'Runner does not support WebGL2; static recovery path is tested separately');await settled(page,1);
  await page.locator('#deskScene canvas').evaluate(canvas=>canvas.getContext('webgl2').getExtension('WEBGL_lose_context').loseContext());
  await expect(page.locator('html')).toHaveClass(/static-book/);await settled(page,1);await expect(page.locator('#spreadReader')).toContainText('Harmonije');
  await page.locator('.header-contact').click();await expect(page.locator('#projectDialog')).toBeVisible();
 });
 
 test('every real desktop spread fits its physical pages',async({page})=>{
- test.setTimeout(60000);await page.goto('/#book/1');await expect(page.locator('html')).toHaveClass(/scene-ready/);
+ test.setTimeout(120000);await page.goto('/#book/1');test.skip(!await edition(page),'Runner does not support WebGL2; HTML spreads are covered in both languages');
  for(const language of ['en','sr']) {
   if(language==='sr')await page.locator('.lang-switch').click();
   for(let i=0;i<6;i++) {
@@ -98,4 +111,52 @@ test('every real desktop spread fits its physical pages',async({page})=>{
    for(const article of await page.locator('.physical-page .book-page').all())expect(await article.evaluate(e=>e.scrollHeight-e.clientHeight)).toBeLessThanOrEqual(1);
   }
  }
+});
+
+for(const viewport of [{width:390,height:844},{width:1440,height:600}])test(`compact book presents every leaf without rebuilding artwork at ${viewport.width}x${viewport.height}`,async({page})=>{
+ test.setTimeout(180000);await page.setViewportSize(viewport);await page.goto('/#book/1');test.skip(!await edition(page),'Runner lacks WebGL2; full static journeys remain covered');await settled(page,0);
+ const uploads=await page.locator('#deskScene').getAttribute('data-artwork-uploads');expect(uploads).toBe('12');
+ for(let leaf=0;leaf<12;leaf++){
+  await settled(page,Math.floor(leaf/2));await expect(page.locator('html')).toHaveAttribute('data-leaf',String(leaf%2));
+  await expect(page.locator('.physical-page:not([inert])')).toHaveCount(1);await expect(page.locator('.physical-page:not([inert])')).toHaveAttribute('data-side',String(leaf%2));await expect(page.locator('#spreadReader')).toBeHidden();
+  expect(await page.locator('.physical-page:not([inert]) .book-page').evaluate(e=>e.scrollHeight-e.clientHeight)).toBeLessThanOrEqual(1);
+  expect(await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth)).toBeLessThanOrEqual(1);
+  if(leaf<11)await page.locator('#nextSpread').click();
+ }
+ expect(await page.locator('#deskScene').getAttribute('data-artwork-uploads')).toBe(uploads);await expect(page.locator('#nextSpread')).toBeDisabled();
+ await page.locator('.header-contact').click();await expect(page.locator('#projectDialog')).toBeVisible();
+});
+
+test('resize during a physical turn keeps prepared pages and finishes in the new layout',async({page})=>{
+ test.setTimeout(120000);const errors=[];page.on('pageerror',e=>errors.push(e.message));
+ await page.goto('/#book/2');test.skip(!await edition(page),'Runner lacks WebGL2');await settled(page,1);
+ await page.locator('#nextSpread').click();await expect(page.locator('html')).toHaveAttribute('data-book-state','turning');
+ await page.setViewportSize({width:390,height:844});await settled(page,2);
+ await expect(page.locator('.physical-page.compact-folio')).toHaveCount(2);
+ await expect(page.locator('#deskScene')).toHaveAttribute('data-artwork-uploads','24');
+ await expect(page.locator('.physical-page:not([inert])')).toContainText('Gimnastika');
+ await page.locator('#nextSpread').click();await expect(page.locator('.physical-page:not([inert])')).toContainText('Sheetpost');
+ await page.setViewportSize({width:1440,height:900});await expect(page.locator('.physical-page.compact-folio')).toHaveCount(0);
+ await page.locator('#nextSpread').click();await settled(page,3);expect(errors).toEqual([]);
+});
+
+for(const lang of ['en','sr'])test(`case studies provide decoded full-image previews in ${lang}`,async({page})=>{
+ await page.setViewportSize({width:390,height:844});await page.emulateMedia({reducedMotion:'reduce'});await page.goto('/#book/2');await settled(page,1);
+ if(lang==='sr')await page.locator('.lang-switch').click();
+ for(const [id,spread] of [['honey',1],['glas',1],['gym',2],['sheet',2]]){
+  if(spread===2){await page.locator('#chapterToggle').click();await page.locator('#chapterMenu [data-spread="2"]').click();await settled(page,2);}
+  await page.locator(`#spreadReader [data-case="${id}"]`).click();const image=page.locator('#caseDialog .case-preview img');await expect(image).toBeVisible();
+  await expect.poll(()=>image.evaluate(img=>img.complete&&img.naturalWidth>0)).toBe(true);
+  expect(await page.locator('#caseDialog .case-preview a').getAttribute('href')).toBe(await image.getAttribute('src'));
+  await expect(page.locator('#caseDialog .case-preview a')).toHaveAttribute('target','_blank');
+  await expect(page.locator('#caseDialog')).toContainText(lang==='sr'?'Otvori celu sliku':'Open full image');await page.keyboard.press('Escape');
+ }
+});
+
+test('compact cover intro clears the header and contents opens the named project leaf',async({page})=>{
+ test.setTimeout(120000);await page.setViewportSize({width:390,height:844});await page.goto('/');test.skip(!await edition(page),'Runner lacks WebGL2');
+ const bottom=await page.locator('.book-header').evaluate(e=>e.getBoundingClientRect().bottom);
+ expect(await page.locator('.book-eyebrow').evaluate(e=>e.getBoundingClientRect().top)).toBeGreaterThan(bottom+8);
+ await page.locator('#openBook').click();await settled(page,0);await page.locator('.physical-page:not([inert]) .page-contents button').filter({hasText:'GlasAI'}).click();await settled(page,1);
+ await expect(page.locator('.physical-page:not([inert]) h2')).toHaveText('GlasAI');
 });

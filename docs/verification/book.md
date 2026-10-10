@@ -1,38 +1,29 @@
-# Interactive book verification — 11 October 2026
+# Photographic interactive book verification — 11 October 2026
 
-## Delivered architecture
+## Revision
 
-The existing vanilla JavaScript portfolio is now built with Vite. A dynamically loaded Three.js scene renders a procedural walnut desk, hardcover book, coffee cup, watch and pen. A segmented sheet bends around a fixed spine; its front and back have chapter text and genuine project imagery. Semantic HTML pages use CSS3D at rest. A single state controller serializes cover/page transitions and clamps rapid navigation. Camera rotation/zoom are bounded and resettable.
+The live Three.js hardcover now sits within generated photographic desk imagery with realistic walnut grain, coffee, watch and pen. A matching portrait composition serves narrow screens. Generated calfskin color/bump detail, rounded leather covers, metallic foil printing, visible page stacks, slightly angled resting leaves and real contact/turn shadows integrate the book into the environment. Accessories are photographic, not independently orbitable 3D objects.
 
-Six English/Serbian spreads present the introduction, four verified projects, services/process, biography/capabilities and contact. The full original portfolio remains in a reading view, including FAQ, scope, timings, education and project disclosures. Editable inquiries support explicit mailto, Gmail and clipboard actions; there is no sending backend.
+The six bilingual spreads retain the original projects, services, process, biography and contact. Wide screens show two physical pages. Widths below 900px or heights below 740px frame one physical leaf, with twelve-leaf navigation, larger typography/actions and complete project previews. Concise catalogue/concept/preview/simulation qualifiers remain visible; full disclosures remain in case studies and reading view.
 
-Below 1100px or in short windows, readable HTML accompanies the 3D preview. Reduced motion, WebGL failure/context loss and JavaScript-disabled visits have complete reading paths. Original licensed local fonts and project images were retained; desk textures/models are procedural originals.
+## Turn continuity
 
-## Checks and evidence
+All twelve page faces for the active language/layout are decoded and uploaded before interaction. The 48 shipped faces are baked from the exact English/Serbian wide/compact HTML and local fonts; their manifest hashes design/content sources. CI rejects stale artwork or overflowing source pages. Navigation reuses prepared textures without reconstructing canvases, decoding images or uploading new faces during turns.
 
-- JS/CSS lint, HTML validation, translation parity (306 original keys per language, 298 bindings), checked-JavaScript types for the state/geometry core, six unit tests and production build passed.
-- Full local Chromium/WebKit run: **87 passed, one capability-based skip**, before the final animation timestep/folio refinements. The affected book suite passed all 32 checks after those refinements.
-- Firefox 155 / Playwright 1.63 could not launch on this Mac: “Could not find profile folder.” Default, alternate temporary directory and persistent-profile attempts failed before opening any page. This is an unverified local engine, not a passing test. The existing Linux GitHub Actions matrix checks all three engines after push.
-- Browser coverage includes opening/closing, forward/back, rapid navigation, chapters/hash routes, cases/contact, language persistence, no-JS/no-WebGL/reduced-motion/context-loss, physical-page overflow in both languages, and widths 360/390/430/768/1024/1440/1920.
-- Native Chromium touch events verified swipe turns and two-finger/pinch camera input. Wheel zoom/reset passed; no page errors were observed in that run.
-- Every project destination returned HTTP 200: Harmonije Panonije, GlasAI, Gimnastika Kraguj and Sheetpost. Claims remain explicitly scoped to catalogue, concept, preview and simulated workflow.
-- Inquiry Tab navigation explicitly cycles every visible action, fixing WebKit's default link-skipping behavior. Targeted WebKit regression and the subsequent complete supported-engine run passed.
-- Production dependency audit reported zero vulnerabilities. The development dependency audit reports inherited Stylelint/braces-chain advisories.
+The stationary destination is already underneath the moving sheet. Separate front/back textures follow the correct forward/reverse mapping. A segmented sheet bends around its spine; a bounded state controller serializes rapid input. Resizing prepares the new layout separately and commits its maps/semantic-page class only at a stationary boundary. Language and superseded navigation requests are guarded. Rendering stops when idle; hidden tabs, reading view and dialogs pause it. Page-edge geometry uses four instanced batches and deformation integrates each column once per frame. Software renderers use a 0.75 canvas pixel ratio and 512px shadow map; ordinary GPUs retain full resolution. The contact-shadow receiver covers the book area rather than the entire environment.
 
-## Independent critique and fixes
+## Verification
 
-A separate reviewer inspected the implementation and browser evidence. Scores before remediation: brief fidelity 7/10 (video unavailable); art/photorealism 6.5; page flipping 6; content/conversion 8; mobile 6.5; accessibility 7.5; performance 7 provisional; premium impression 7. These are candid reviewer judgments, not measured performance scores or a claim of 9/10 completion.
+Lint, HTML validation, bilingual binding parity (306 keys, 298 bindings), all 48 artwork faces, checked JavaScript state/geometry types, eight meaningful unit checks and the production build pass. Browser verification includes forward/back turns, rapid input, chapter/hash navigation, opening/closing, cases, inquiry editing, language, reading view, no-JS, reduced motion, initialization failure and context loss. Additional real-WebGL journeys cover all twelve leaves at 390×844 and 1440×600, unchanged preparation counts during navigation, and resizing in the middle of a turn.
 
-The three highest-impact weaknesses were addressed:
+The final full local supported-engine run passed 99 checks with one WebKit clipboard capability skip (Chromium 50 passed; WebKit 49 passed, one skipped). All six desktop spreads in both languages, all twelve compact leaves, short-window contact and mobile case previews were captured without page errors. The built production edition passed desktop/mobile primary journeys and its social asset returned HTTP 200, with no failed responses or page errors. Release observations are recorded in the delivery report. Native Apple M2 / ANGLE Metal timing across four forward/reverse turns sampled 222 frames: median and p95 16.7ms, maximum 33.5ms, no observed long tasks, and 12 prepared page faces both before and after. No screenshots were taken during timing. The software-rendered headless-shell check remained slower (100ms median), despite reduced resolution; this is not a universal 60fps claim. Firefox cannot launch on this Mac (profile-folder failure). Linux Firefox explicitly disables WebGL2, so CI tests its complete static journey and skips only hardware-dependent 3D checks after probing capability. A capable renderer that falls back unexpectedly fails verification.
 
-1. Placeholder paper artwork was replaced by actual chapter text and project screenshots on both sheet faces.
-2. Mobile chapter changes reset reading position, with regression coverage.
-3. Tablet/small-window pages now use the readable HTML edition instead of miniature CSS3D text; real-WebGL tablet coverage verifies the path.
+## Independent critique
 
-Additional corrections include initial scene/reading-page visibility, correctly oriented reverse-face printing, translated decorative labels, settled live announcements, per-frame DOM write caching, bfcache lifecycle handling, cover hover, sticky small-screen controls, bilingual physical-page fit, dialog keyboard containment and a bounded timestep that preserves intermediate bends on slow renderers.
+The separate reviewer rated the initial photographic revision: environment realism 8/10, book realism 7/10, compact usability 8/10, premium impression 7.5/10; turn continuity approximately 8/10 from code, pending frame inspection. Scores are subjective and do not establish hardware performance.
 
-## Known limits
+The three highest priorities were addressed: darker cover/lighting and angled resting leaves; larger compact actions and contained project imagery; atomic prepared-layout changes between turns. Compact project qualifiers were restored. The browser suite also exposed and corrected static mobile footer interception and a crowded services leaf. Recorded frames and refreshed screenshots provide visual evidence.
 
-The referenced video was not attached, so visual fidelity to it cannot be verified. The scene is visibly procedural, especially its wood, watch and saucer; it should not be described as indistinguishable from photography. Moving canvas page artwork carries the real content but differs from the resting HTML layout. Physical iOS/Android hardware, screen-reader speech, installed email clients and hardware GPU frame rate have not been measured. No backend contact delivery is claimed. Three.js is dynamically loaded but its minified chunk remains approximately 552 kB (138 kB gzip); Vite reports a chunk-size warning.
+## Limits
 
-Delivery report contains the final commit, CI and deployment observations.
+The requested reference video was not attached. The desk/accessories are a photographic background, so their perspective does not rotate independently with the book. Resting content uses selectable semantic CSS3D HTML; the moving sheet uses its matching raster artwork. Physical iOS/Android devices, screen-reader speech, installed email clients and mobile GPU frame rate remain unmeasured. Desktop timing is specific to the tested Apple M2 renderer. There is no contact-sending backend. Three.js is loaded dynamically but still produces Vite’s chunk-size warning. Generated-asset provenance is documented in `assets/scene-v2/PROVENANCE.md`.

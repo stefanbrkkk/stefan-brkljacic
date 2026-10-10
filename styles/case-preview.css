@@ -1,0 +1,32 @@
+.case-preview { margin:0 0 28px;
+ background:#e4dfd4;
+ border:1px solid #d1c8b8;
+ }
+
+.case-preview a { display:block;
+ padding:16px;
+ color:#4d554a;
+ }
+
+.case-preview img { display:block;
+ width:100%;
+ height:auto;
+ max-height:340px;
+ object-fit:contain;
+ }
+
+.case-preview span { display:block;
+ padding-top:14px;
+ min-height:44px;
+ font-size:12px;
+ text-align:right;
+ }
+
+.case-preview a:focus-visible { outline:2px solid #6b5431;
+ outline-offset:3px;
+ }
+
+@media (width <600px) {
+ .case-dialog { padding:40px 24px 24px; }
+ .case-preview a { padding:10px; }
+}

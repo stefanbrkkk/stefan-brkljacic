@@ -3,6 +3,7 @@ import { test, expect } from '@playwright/test';
 test.beforeEach(async ({page}) => { await page.emulateMedia({reducedMotion:'reduce'}); });
 import { decodeLoadedImage } from './helpers/journey.js';
 import { readFile } from 'node:fs/promises';
+import { createHash } from 'node:crypto';
 
 // Local extraction and current viewport-proof contracts.
 test('local assets and ESM entry point load without embedded payloads', async ({ page, request }) => {
@@ -64,7 +65,6 @@ test('capture provenance and social/entity metadata agree with owned assets', as
     const response = await request.get(capture.path);
     expect(response.status()).toBe(200);
     expect(response.headers()['content-type']).toBe('image/jpeg');
-    const { createHash } = await import('node:crypto');
     expect(createHash('sha256').update(await response.body()).digest('hex')).toBe(capture.imageSha256);
   }
   await page.goto('/');
@@ -91,7 +91,7 @@ test('capture provenance and social/entity metadata agree with owned assets', as
   const alias = await request.get('/og-preview.jpg');
   expect(preview.status()).toBe(200);
   expect(alias.status()).toBe(200);
-  expect(await alias.body()).toEqual(await preview.body());
+  expect(createHash('sha256').update(await alias.body()).digest('hex')).toBe(createHash('sha256').update(await preview.body()).digest('hex'));
   const declared = await page.locator('meta[property="og:image:width"],meta[property="og:image:height"]').evaluateAll(elements => elements.map(el => +el.content));
   expect(declared).toEqual([1734,907]);
   const pixels = await page.evaluate(async src => {

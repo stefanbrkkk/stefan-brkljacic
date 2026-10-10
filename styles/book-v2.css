@@ -1,0 +1,455 @@
+/* Photographic edition: the same book at every viewport. */
+:root { --book-gold:#c6a56b;
+ }
+
+.book-header { height:68px;
+ background:linear-gradient(180deg,rgb(12,10,8,.88),rgb(12,10,8,.2));
+ border-bottom:1px solid rgb(225,210,181,.12);
+ }
+
+.book-experience { background-image:var(--desk-photograph);
+ background-size:cover;
+ background-position:center;
+ height:calc(100svh - 44px);
+ min-height:600px;
+ }
+
+.desk-scene { inset:0;
+ }
+
+.scene-vignette { background:linear-gradient(90deg,rgb(8,6,4,.72),transparent 50%),radial-gradient(ellipse at center,transparent 45%,rgb(6,4,2,.5));
+ pointer-events:none;
+ }
+
+.book-intro { left:6%;
+ top:24%;
+ width:33%;
+ }
+
+.book-intro h1 { font-size:clamp(66px,6.7vw,115px);
+ color:#f4e9d7;
+ text-shadow:0 2px 24px rgb(0,0,0,.3);
+ }
+
+.book-role { color:#e0d3bc;
+ }
+
+.book-promise { color:#c0ae91;
+ }
+
+.book-eyebrow { color:#c6a56b;
+ }
+
+.edition-dot { background:#c6a56b;
+ box-shadow:0 0 16px rgb(198,165,107,.4);
+ }
+
+.open-book { border-color:rgb(214,185,134,.6);
+ background:rgb(18,12,7,.55);
+ box-shadow:0 12px 35px rgb(0,0,0,.2);
+ color:#efdfc5;
+ backdrop-filter:blur(12px);
+ }
+
+.open-book:hover { background:rgb(79,53,24,.7);
+ border-color:#d1ac6c;
+ transform:translateY(-2px);
+ }
+
+.book-bottom-bar { height:44px;
+ padding:0 30px;
+ background:#100d09;
+ color:#b8a689;
+ border-top:1px solid rgb(212,184,132,.15);
+ }
+
+.book-bottom-bar p { font-size:9px;
+ order:initial;
+ width:auto;
+ }
+
+.book-open .scene-vignette { background:radial-gradient(ellipse at center,transparent 47%,rgb(6,4,2,.36));
+ display:block;
+ }
+
+.book-controls { position:absolute;
+ top:auto;
+ bottom:18px;
+ left:50%;
+ transform:translateX(-50%);
+ width:440px;
+ max-width:calc(100% - 32px);
+ margin:0;
+ padding:8px;
+ background:rgb(18,13,8,.88);
+ border-color:rgb(218,189,142,.25);
+ box-shadow:0 8px 30px rgb(0,0,0,.35);
+ backdrop-filter:blur(18px);
+ }
+
+.book-controls button { min-height:44px;
+ min-width:44px;
+ }
+
+.book-controls button:hover { background:rgb(199,164,111,.15);
+ color:#edd6ac;
+ }
+
+.chapter-menu { bottom:80px;
+ border-color:rgb(218,189,142,.3);
+ background:rgb(19,14,9,.96);
+ }
+
+.book-open .desk-caption { bottom:86px;
+ color:#cfb890;
+ }
+
+.book-open .book-experience { padding-top:0;
+ height:calc(100svh - 44px);
+ min-height:480px;
+ overflow:hidden;
+ }
+
+.book-open .desk-scene { inset:70px 0 72px;
+ height:auto;
+ }
+
+.book-open .spread-reader { display:none;
+ }
+
+.physical-page .book-page { background:#f4f0e8;
+ }
+
+.book-page::after { content:"";
+ pointer-events:none;
+ position:absolute;
+ inset:0;
+ background:url('../assets/scene-v2/paper-grain.svg');
+ opacity:.065;
+ mix-blend-mode:multiply;
+ }
+
+.compact-folio .book-page { padding:30px 40px;
+ }
+
+.compact-folio .page-masthead { font-size:12px;
+ margin-bottom:25px;
+ }
+
+.compact-folio h2 { font-size:52px;
+ line-height:1.04;
+ }
+
+.compact-folio .page-kicker { font-size:16px;
+ margin-bottom:18px;
+ }
+
+.compact-folio .page-description { font-size:24px;
+ line-height:1.42;
+ margin:20px 0;
+ }
+
+.compact-folio .page-deck { font-size:21px;
+ line-height:1.35;
+ margin-bottom:12px;
+ }
+
+.compact-folio .page-contents button { font-size:21px;
+ min-height:80px; line-height:1.2;
+ padding:8px 0;
+ }
+
+.compact-folio .page-contents small { font-size:13px;
+ }
+
+.compact-folio .contents-foot { font-size:20px;
+ }
+
+.compact-folio .project-page h2 { min-height:0;
+ margin-bottom:10px;
+ }
+
+.compact-folio .project-art { height:177px;
+ margin-bottom:8px;
+ }
+
+.compact-folio .project-art img { height:137px;
+ object-fit:contain;
+ }
+
+.compact-folio .page-contribution { margin-top:6px;
+ }
+
+.compact-folio .page-contribution p { font-size:19px;
+ line-height:1.35;
+ }
+
+.compact-folio .page-contribution > span { font-size:13px;
+ }
+
+.compact-folio .page-constraint { display:none;
+ }
+
+.compact-folio .page-actions { margin-top:0;
+ }
+
+.compact-folio .page-actions a,.compact-folio .page-actions button { display:inline-flex;
+ align-items:center;
+ justify-content:center;
+ font-size:22px;
+ min-height:80px;
+ }
+
+.compact-folio .page-folio { font-size:12px;
+ }
+
+.compact-folio .architecture-art { height:210px;
+ margin-bottom:15px;
+ }
+
+.compact-folio .education-note h3 { font-size:20px;
+ line-height:1.25;
+ }
+
+.compact-folio .education-note p { font-size:16px;
+ }
+
+.compact-folio .education-note > span { font-size:13px;
+ }
+
+.compact-folio .about-monogram { height:80px;
+ font-size:65px;
+ margin:0 0 12px;
+ }
+
+.compact-folio .toolkit-list > div { font-size:24px; line-height:1.2;
+ padding:8px 0;
+ }
+
+.compact-folio .toolkit-list small { font-size:14px;
+ }
+
+.compact-folio .page-services section { padding:5px 0;
+ }
+
+.compact-folio .page-services h3 { font-size:28px;
+ line-height:1.15;
+ margin:6px 0;
+ }
+
+.compact-folio .page-services p { font-size:22px;
+ line-height:1.35; display:-webkit-box;
+ -webkit-line-clamp:2;
+ -webkit-box-orient:vertical;
+ overflow:hidden;
+ }
+
+.compact-folio .page-process > div { font-size:25px;
+ padding:14px 0;
+ }
+
+.compact-folio .page-contact { font-size:22px;
+ min-height:80px;
+ align-items:center;
+ line-height:1.2;
+ margin:10px 0;
+ padding:12px 18px;
+ }
+
+.compact-folio .book-email { font-size:24px;
+ }
+
+.compact-folio .book-socials { font-size:22px;
+ }
+
+.static-book.book-open .book-experience { height:auto;
+ min-height:0;
+ padding:95px 0 20px;
+ overflow:visible;
+ }
+
+.static-book.book-open .spread-reader { display:grid;
+ position:relative;
+ grid-template-columns:repeat(2,minmax(0,1fr));
+ gap:2px;
+ padding:0 4%;
+ }
+
+.static-book .book-controls { position:fixed;
+ bottom:60px;
+ }
+
+.static-book .spread-reader .book-page { width:100%;
+ height:auto;
+ min-height:780px;
+ }
+
+.static-book .desk-caption { display:none;
+ }
+
+.book-ready:not(.scene-ready, .static-book) .fallback-cover { display:none;
+ }
+
+.scene-loading { color:#cfb78d;
+ left:50%;
+ top:52%;
+ transform:translate(-50%,-50%);
+ text-align:center;
+ letter-spacing:.14em;
+ font-size:11px;
+ }
+
+@media (width <900px), (height <740px) {
+ .book-header { height:60px;
+ padding:0 20px;
+ background:rgb(13,10,7,.82);
+ }
+
+ .book-experience,.book-open .book-experience { height:calc(100svh - 44px);
+ min-height:430px;
+ }
+
+ .book-intro { top:76px;
+ left:24px;
+ width:calc(100% - 48px);
+ }
+
+ .book-intro h1 { font-size:clamp(42px,8vw,62px);
+ line-height:.98;
+ margin-bottom:12px;
+ }
+
+ .book-eyebrow { font-size:8px;
+ margin-bottom:15px;
+ }
+
+ .book-role { font-size:11px;
+ }
+
+ .book-promise { display:none;
+ }
+
+ .open-book { margin-top:18px;
+ padding:12px 16px;
+ min-width:155px;
+ }
+
+ .desk-scene { inset:0;
+ height:auto;
+ }
+
+ .book-open .desk-scene { inset:64px 0 68px;
+ height:auto;
+ }
+
+ .scene-vignette { background:linear-gradient(180deg,rgb(8,6,4,.78),transparent 45%,rgb(8,6,4,.3));
+ }
+
+ .book-open .scene-vignette { background:linear-gradient(0deg,rgb(8,6,4,.45),transparent 30%);
+ }
+
+ .book-controls { position:absolute;
+ top:auto;
+ bottom:10px;
+ left:50%;
+ transform:translateX(-50%);
+ width:380px;
+ padding:6px;
+ gap:4px;
+ }
+
+ .book-controls button { min-height:44px;
+ min-width:44px;
+ }
+
+ .book-controls #resetView { display:block;
+ }
+
+ .chapter-name { font-size:10px;
+ }
+
+ #spreadLabel { font-size:8px;
+ }
+
+ .book-open .desk-caption { display:none;
+ }
+
+ .book-bottom-bar { height:44px;
+ padding:0 18px;
+ flex-wrap:nowrap;
+ gap:8px;
+ }
+
+ .book-bottom-bar p { display:none;
+ }
+
+ .book-location,.read-button { font-size:9px;
+ }
+
+ .chapter-menu { position:absolute;
+ bottom:65px;
+ width:calc(100% - 28px);
+ }
+
+ .static-book.book-open .spread-reader { display:block;
+ padding:0 16px;
+ }
+
+ .static-book .spread-reader .book-page { min-height:650px;
+ }
+
+ .static-book .book-controls { position:fixed;
+ bottom:50px;
+ }
+
+ .static-book .book-experience { min-height:650px;
+ }
+}
+
+@media (width >=900px) and (height <740px) {
+ .book-intro { left:7%;
+ top:18%;
+ width:30%;
+ }
+
+ .book-intro h1 { font-size:60px;
+ }
+}
+.compact-folio .page-services small { font-size:13px; }
+
+.compact-folio .page-process + .page-description { display:-webkit-box;
+ -webkit-line-clamp:2;
+ -webkit-box-orient:vertical;
+ overflow:hidden; }
+
+.compact-folio .about-monogram + .page-description ~ .page-description { display:-webkit-box;
+ -webkit-line-clamp:2;
+ -webkit-box-orient:vertical;
+ overflow:hidden; }
+
+.compact-folio .education-note { padding-top:12px;
+ margin-bottom:12px; }
+
+.compact-folio .book-page:has(.page-services) h2 { font-size:50px; }
+
+.compact-folio .book-page > * { flex-shrink:0; }
+
+.compact-folio .project-page .page-description { margin:8px 0; }
+
+@media (width <900px) {
+ .book-experience { background-image:url("../assets/scene-v2/desk-portrait.webp"); }
+}
+
+.compact-folio .page-contents { display:grid;
+ grid-template-columns:repeat(2,minmax(0,1fr));
+ column-gap:18px; }
+.project-art img { object-fit:contain; }
+.compact-qualifier { display:none; }
+
+.compact-folio .compact-qualifier { display:block;
+ font-size:15px;
+ line-height:1.3;
+ margin:4px 0;
+ color:#666052; }
+
+.compact-folio .project-page .page-kicker { margin-bottom:8px; }

@@ -1,14 +1,15 @@
 import {BookState} from './book-state.js';
-import {spreadHTML,bookCopy,chapters,projects} from './book-content.js';
+import {spreadHTML,bookCopy,chapters,projects,projectImages} from './book-content.js';
 import {copy} from './content.js';
 
 const $=id=>document.getElementById(id);
 export async function initBook() {
  const state=new BookState(6),host=$('deskScene'),reader=$('spreadReader'),root=document.documentElement;
+ let leaf=0,requestVersion=0;
  let scene=null,rendered=-1,lastLang='',reading=false,lastTime=0,raf=0,caseOpener=null,lastRender='';
  const reduced=matchMedia('(prefers-reduced-motion: reduce)');
  const lang=()=>root.lang==='sr'?'sr':'en';
- const small=()=>innerWidth<1100||innerHeight<700;
+ const small=()=>innerWidth<900||innerHeight<740;
  const localize=()=>{
   const b=bookCopy[lang()];
   document.querySelectorAll('[data-book-copy]').forEach(el=>el.textContent=b[el.dataset.bookCopy]);
@@ -19,34 +20,41 @@ export async function initBook() {
  };
  const render=()=>{
   const l=lang(),open=state.phase!=='closed' && state.phase!=='closing';
-  const signature=[state.phase,state.spread,state.target,l,small(),!!scene,root.classList.contains('static-book')].join('|');
+  const signature=[state.phase,state.spread,state.target,l,small(),!!scene,leaf,root.classList.contains('static-book')].join('|');
   if(signature===lastRender)return;lastRender=signature;
-  root.dataset.bookState=state.phase;root.dataset.spread=String(state.spread);
-  root.classList.toggle('book-open',open);
+  root.dataset.bookState=state.phase;root.dataset.spread=String(state.spread);root.dataset.leaf=String(leaf);if(scene){scene.focusSide=leaf;scene.dirty=true;}
+  root.classList.toggle('book-open',open);root.classList.toggle('compact-book',small()&&!!scene);
   $('bookControls').hidden=!open;
-  $('previousSpread').disabled=state.target===0;
-  $('nextSpread').disabled=state.target===5;
-  $('spreadLabel').textContent=`0${state.spread+1} / 06`;
+  $('previousSpread').disabled=state.target===0&&(!small()||!scene||leaf===0);
+  $('nextSpread').disabled=state.target===5&&(!small()||!scene||leaf===1);
+  $('spreadLabel').textContent=small()&&scene?`${String(state.spread*2+leaf+1).padStart(2,'0')} / 12`:`0${state.spread+1} / 06`;
   $('chapterName').textContent=chapters[l][state.spread];
+  if(small()&&scene){$('previousSpread').setAttribute('aria-label',bookCopy[l].leafPrev);$('nextSpread').setAttribute('aria-label',bookCopy[l].leafNext);}
   if(state.phase==='open')$('bookStatus').textContent=`${bookCopy[l].page} ${state.spread+1}: ${chapters[l][state.spread]}`;
   $('bookControls').setAttribute('aria-label',`${bookCopy[l].page} ${state.spread+1}: ${chapters[l][state.spread]}`);
-  reader.hidden=!open || (!small() && !root.classList.contains('static-book'));
+  reader.hidden=!open || !root.classList.contains('static-book');
   if(rendered!==state.spread||lastLang!==l){
    const html=spreadHTML(state.spread,l);reader.innerHTML=html.join('');scene?.setPages(html,state.spread,l);rendered=state.spread;lastLang=l;
   }
+  if(small()&&scene){$('chapterName').textContent=reader.children[leaf]?.getAttribute('aria-label')||chapters[l][state.spread];if(state.phase==='open')$('bookStatus').textContent=`${bookCopy[l].leaf} ${state.spread*2+leaf+1}: ${$('chapterName').textContent}`;}
  };
- const request=index=>{
+ const request=async(index,side=0)=>{
+  const version=++requestVersion;
+  if(scene)await scene.prepare(lang());
+  if(version!==requestVersion)return;leaf=side;
   state.go(index);$('chapterMenu').hidden=true;$('chapterToggle').setAttribute('aria-expanded','false');
   if(!scene||reduced.matches)for(let i=0;i<15;i++)state.tick(2);
   render();
-  history.replaceState(null,'',`#book/${state.target+1}`);
+  history.replaceState(null,'',`#book/${state.target+1}${small()&&scene?'/'+(leaf?'right':'left'):''}`);
   if(small())window.scrollTo({top:0,behavior:'instant'});
  };
  const action=type=>{
   if(type==='open')request(state.spread);
-  else if(type==='next')request(state.target+1);
-  else if(type==='prev')request(state.target-1);
-  else if(type==='close'){state.close();if(!scene)state.tick(2);history.replaceState(null,'','#top');render();$('openBook').focus({preventScroll:true});}
+  else if(type==='next'||type==='prev'){
+   if(small()&&scene){const destination=Math.max(0,Math.min(11,state.target*2+leaf+(type==='next'?1:-1)));request(Math.floor(destination/2),destination%2);}
+   else request(state.target+(type==='next'?1:-1));
+  }
+  else if(type==='close'){requestVersion++;state.close();if(!scene)state.tick(2);history.replaceState(null,'','#top');render();$('openBook').focus({preventScroll:true});}
  };
  const setReading=(value,target=null)=>{
   reading=value;root.classList.toggle('reading-mode',value);$('readingContent').hidden=!value;$('readingToolbar').hidden=!value;
@@ -55,12 +63,12 @@ export async function initBook() {
  };
  const openCase=(id,opener)=>{
   const p=projects.find(p=>p.id===id);if(!p)return;const d=copy[lang()];
-  $('caseContent').innerHTML=`<div class="page-kicker">${d[id+'Status']}</div><h2 id="caseTitle">${p.title}</h2><dl>${['Problem','Role','Constraints','Solution','Deliverables'].map((field,i)=>`<div><dt>${d[['caseProblem','caseContribution','caseConstraint','caseSolution','caseDeliverables'][i]]}</dt><dd>${d[id+field]}</dd></div>`).join('')}</dl><a class="page-contact" href="${p.url}" target="_blank" rel="noopener noreferrer">${bookCopy[lang()].live}</a>`;
+  $('caseContent').innerHTML=`<div class="page-kicker">${d[id+'Status']}</div><h2 id="caseTitle">${p.title}</h2><figure class="case-preview"><a href="${projectImages[id]}" target="_blank" rel="noopener noreferrer"><img src="${projectImages[id]}" alt="${p.title.replace('<br>',' ')}" width="1200" height="800"><span>${lang()==='sr'?'Otvori celu sliku ↗':'Open full image ↗'}</span></a></figure><dl>${['Problem','Role','Constraints','Solution','Deliverables'].map((field,i)=>`<div><dt>${d[['caseProblem','caseContribution','caseConstraint','caseSolution','caseDeliverables'][i]]}</dt><dd>${d[id+field]}</dd></div>`).join('')}</dl><a class="page-contact" href="${p.url}" target="_blank" rel="noopener noreferrer">${bookCopy[lang()].live}</a>`;
   caseOpener=opener;$('caseDialog').showModal();$('caseClose').focus();
  };
  document.addEventListener('click',event=>{
   const target=event.target.closest('button,a');if(!target)return;
-  if(target.hasAttribute('data-spread'))request(Number(target.dataset.spread));
+  if(target.hasAttribute('data-spread'))request(Number(target.dataset.spread),Number(target.dataset.leaf)||0);
   if(target.hasAttribute('data-close-book'))action('close');
   if(target.hasAttribute('data-case'))openCase(target.dataset.case,target);
   // Generated semantic pages share the preserved inquiry controller's opener.
@@ -85,7 +93,7 @@ export async function initBook() {
   if(e.key==='Enter'&&e.target===document.body)action('open');
  });
  const hash=()=>{
-  const match=location.hash.match(/^#book\/([1-6])$/);if(match)request(Number(match[1])-1);
+  const match=location.hash.match(/^#book\/([1-6])(?:\/(left|right))?$/);if(match)request(Number(match[1])-1,match[2]==='right'?1:0);
   else if(location.hash && location.hash!=='#top'){const target=document.getElementById(location.hash.slice(1));if(target&&$('readingContent').contains(target))setReading(true,target);}
  };
  addEventListener('hashchange',hash);
@@ -101,7 +109,7 @@ export async function initBook() {
  try {
   await document.fonts.ready;
   const {BookScene}=await import('./book-scene.js');scene=new BookScene(host,action,fallback);
-  rendered=-1;render();scene.update(state,1);root.classList.add('scene-ready');$('sceneLoading').hidden=true;
+  await scene.prepare(lang());rendered=-1;render();scene.update(state,1);root.classList.add('scene-ready');$('sceneLoading').hidden=true;
   const frame=time=>{
    const dt=Math.min(.2,(time-(lastTime||time))/1000);lastTime=time;
    if(!document.hidden&&!reading&&!document.querySelector('dialog[open]')){state.tick(dt);render();scene?.update(state,dt);}
