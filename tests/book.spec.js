@@ -214,7 +214,7 @@ test('a prepared resize cannot discard a slower language change during a turn',a
 
 test('reopening to another chapter prepares its inner cover page before the reveal',async({page})=>{
  test.setTimeout(120000);await page.goto('/#book/2');test.skip(!await edition(page),'Runner lacks WebGL2');await settled(page,1);
- await page.locator('#closeBook').click();await expect(page.locator('html')).toHaveAttribute('data-book-state','closing');await page.keyboard.press('ArrowRight');
- await expect.poll(()=>page.locator('html').evaluate(el=>[el.dataset.bookState,el.dataset.spread].join(':')),{timeout:30000}).toBe('opening:2');
- await expect(page.locator('.physical-page[data-side="0"] h2')).toContainText('Gimnastika');await expect(page.locator('html')).toHaveAttribute('data-book-state','opening');await settled(page,2);
+ await page.locator('#closeBook').click();await expect(page.locator('html')).toHaveAttribute('data-book-state','closing');
+ const reveal=page.evaluate(()=>new Promise(resolve=>{function inspect(){const root=document.documentElement;if(root.dataset.bookState==='opening'&&root.dataset.spread==='2')resolve(document.querySelector('.physical-page[data-side="0"] h2')?.textContent);else requestAnimationFrame(inspect);}inspect();}));
+ await page.keyboard.press('ArrowRight');expect(await reveal).toContain('Gimnastika');await settled(page,2);
 });
