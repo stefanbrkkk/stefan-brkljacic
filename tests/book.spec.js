@@ -208,6 +208,13 @@ test('a prepared resize cannot discard a slower language change during a turn',a
   await page.evaluate(async()=>{document.querySelector('#nextSpread').click();while(document.documentElement.dataset.bookState!=='turning')await new Promise(requestAnimationFrame);document.querySelector('.lang-switch').click();});
   await page.setViewportSize({width:390,height:900});await settled(page,2);
   await expect.poll(async()=>Number(await page.locator('#deskScene').getAttribute('data-artwork-uploads')),{timeout:30000}).toBe(24);
-  release();await expect(page.locator('#deskScene')).toHaveAttribute('data-artwork-language','sr',{timeout:30000});await expect(page.locator('.physical-page:not([inert]) h2')).toContainText('Gimnastika');
+  release();await expect(page.locator('#deskScene')).toHaveAttribute('data-artwork-language','sr',{timeout:30000});await expect(page.locator('.physical-page:not([inert])')).toHaveCount(1,{timeout:30000});await expect(page.locator('.physical-page:not([inert])')).toHaveClass(/compact-folio/);await expect(page.locator('.physical-page:not([inert]) h2')).toContainText('Gimnastika');
  }finally{release();}
+});
+
+test('reopening to another chapter prepares its inner cover page before the reveal',async({page})=>{
+ test.setTimeout(120000);await page.goto('/#book/2');test.skip(!await edition(page),'Runner lacks WebGL2');await settled(page,1);
+ await page.locator('#closeBook').click();await expect(page.locator('html')).toHaveAttribute('data-book-state','closing');await page.keyboard.press('ArrowRight');
+ await expect.poll(()=>page.locator('html').evaluate(el=>[el.dataset.bookState,el.dataset.spread].join(':')),{timeout:30000}).toBe('opening:2');
+ await expect(page.locator('.physical-page[data-side="0"] h2')).toContainText('Gimnastika');await expect(page.locator('html')).toHaveAttribute('data-book-state','opening');await settled(page,2);
 });

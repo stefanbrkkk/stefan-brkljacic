@@ -13,3 +13,10 @@ export function pagePoint(u,progress,width) {
   }
   return {x,z};
 }
+/** Keep the cover above the paper through its arc, then lower it onto the desk.
+ * @param {number} open */
+export function coverPose(open) {
+ const p=Math.max(0,Math.min(1,open)),landing=Math.max(0,(p-.85)/.15);
+ const reveal=landing*landing*(3-2*landing);
+ return {angle:-Math.PI*p,hingeZ:.31-.295*reveal,reveal};
+}

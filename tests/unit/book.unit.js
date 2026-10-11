@@ -2,7 +2,7 @@ import {test} from 'node:test';
 import assert from 'node:assert/strict';
 
 const {BookState} = await import('../../scripts/book-state.js').catch(() => ({}));
-const {pagePoint} = await import('../../scripts/page-geometry.js').catch(() => ({}));
+const {pagePoint,coverPose} = await import('../../scripts/page-geometry.js').catch(() => ({}));
 
 test('rapid navigation serializes turns and clamps the destination', () => {
   assert.equal(typeof BookState, 'function', 'BookState must exist');
@@ -45,4 +45,16 @@ test('the turning leaf stays above both resting pages throughout its travel',()=
   const point=pagePoint(col/64,step/200,2.9);
   assert.ok(point.z>=-1e-9,`sheet penetrates the resting page at progress ${step/200}, column ${col}: ${point.z}`);
  }
+});
+
+test('cover opening clears the paper and lands without an early left-block reveal',()=>{
+ assert.equal(typeof coverPose,'function');
+ for(let step=0;step<=200;step++){
+  const open=step/200,pose=coverPose(open);
+  if(open<=.85){assert.ok(pose.hingeZ-.035>=.272);assert.equal(pose.reveal,0);}
+  const endpaperSpine=pose.hingeZ+.199*pose.reveal-(.037+.022*pose.reveal)*Math.cos(Math.PI*open);
+  assert.ok(endpaperSpine>=.272,`opening paper intersects the book at ${open}`);
+ }
+ assert.ok(Math.abs(coverPose(1).hingeZ-.015)<1e-9);
+ assert.equal(coverPose(1).reveal,1);assert.equal(coverPose(1).angle,-Math.PI);
 });
