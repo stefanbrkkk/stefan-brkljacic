@@ -124,13 +124,13 @@ export class BookScene {
   this.coverMaterial=new THREE.MeshStandardMaterial({color:'#665247',map:leather,bumpMap:leather,bumpScale:.012,roughness:.54,metalness:.08,envMapIntensity:.16});
   this.paperMaterial=new THREE.MeshStandardMaterial({color:'#f4f0e8',roughness:.93});
   const base=new THREE.Mesh(new RoundedBoxGeometry(W+.12,H+.16,.075,3,.023),this.coverMaterial);base.position.set(W/2,0,0);base.castShadow=true;base.receiveShadow=true;this.book.add(base);
-  this.stackRight=new THREE.Mesh(new THREE.BoxGeometry(W-.04,H-.05,.2125),this.paperMaterial);this.stackRight.position.set(W/2,0,.14375);this.stackRight.castShadow=true;this.stackRight.receiveShadow=true;this.book.add(this.stackRight);
-  this.stackLeft=new THREE.Mesh(new THREE.BoxGeometry(W-.04,H-.05,.2),this.paperMaterial);this.stackLeft.position.set(-W/2,0,.15);this.stackLeft.castShadow=true;this.stackLeft.receiveShadow=true;this.book.add(this.stackLeft);
+  this.stackRight=new THREE.Mesh(new THREE.BoxGeometry(W-.04,H-.05,.2025),this.paperMaterial);this.stackRight.position.set(W/2,0,.13875);this.stackRight.castShadow=true;this.stackRight.receiveShadow=true;this.book.add(this.stackRight);
+  this.stackLeft=new THREE.Mesh(new THREE.BoxGeometry(W-.04,H-.05,.19),this.paperMaterial);this.stackLeft.position.set(-W/2,0,.145);this.stackLeft.castShadow=true;this.stackLeft.receiveShadow=true;this.book.add(this.stackLeft);
   const lineMaterial=new THREE.MeshStandardMaterial({color:'#c5bca9',roughness:1});
   for(const side of [-1,1])for(const edge of [false,true]){
    const geometry=new THREE.BoxGeometry(edge?W-.04:.004,edge?.004:H-.045,.0009);
    const lines=new THREE.InstancedMesh(geometry,lineMaterial,17);
-   for(let i=0;i<17;i++){const transform=new THREE.Matrix4().makeTranslation(edge?side*W/2:side*W,edge?-H/2+.022:0,(side===-1?.053:.0405)+i*.0125);lines.setMatrixAt(i,transform);}
+   for(let i=0;i<17;i++){const transform=new THREE.Matrix4().makeTranslation(edge?side*W/2:side*W,edge?-H/2+.022:0,(side===-1?.053:.0405)+i*.0115);lines.setMatrixAt(i,transform);}
    if(side===-1)lines.userData.left=true;this.book.add(lines);
   }
   const spine=new THREE.Mesh(new THREE.CylinderGeometry(.14,.14,H+.12,24,1,false,0,Math.PI),this.coverMaterial);spine.rotation.y=Math.PI/2;spine.position.z=.1;this.book.add(spine);
@@ -251,7 +251,7 @@ export class BookScene {
   const open=state.phase==='closed'?0:state.phase==='opening'?smooth(state.progress):state.phase==='closing'?1-smooth(state.progress):1;
   const pose=coverPose(open),coverMoving=['opening','closing'].includes(state.phase);
   this.coverPivot.rotation.y=pose.angle-(1-open)*this.hover;this.coverPivot.position.z=pose.hingeZ;
-  this.stackLeft.visible=pose.reveal>0;this.stackLeft.scale.z=Math.max(.001,pose.reveal);this.stackLeft.position.z=.05+.1*pose.reveal;
+  this.stackLeft.visible=pose.reveal>0;this.stackLeft.scale.z=Math.max(.001,pose.reveal);this.stackLeft.position.z=.05+.095*pose.reveal;
   this.book.children.forEach(child=>{if(child.userData.left){child.visible=pose.reveal>0;child.scale.z=pose.reveal;child.position.z=.05*(1-pose.reveal);}});
   this.restPages.forEach((mesh,i)=>{mesh.visible=open>.05&&(!coverMoving||i===1);});
   this.pageShadows.forEach((mesh,i)=>{mesh.visible=open>.05&&(!coverMoving||i===1);});
